@@ -14,6 +14,7 @@ from src.utils.lm_modeling import load_model, load_text2embedding
 import os
 import json
 from torch_geometric.data import Data
+import numpy as np
 
 MODEL_NAME = "meta-llama/Llama-2-13b-chat-hf"
 
@@ -45,8 +46,17 @@ class TextEmbedder:
         self.model, self.tokenizer, self.device = load_model[model]()
         self.text2embedding = load_text2embedding[model]
 
-    def embed(self, input):
-        return self.text2embedding(self.model, self.tokenizer, self.device, input)
+    def embed(self, input, multiplier=1):
+        embedding = self.text2embedding(self.model, self.tokenizer, self.device, input)
+        return embedding.repeat(1, multiplier)
+
+    def get_query_embedding(query, repeat_factor, tokenizer, model):
+        inputs = tokenizer(query, return_tensors='pt', truncation=True, padding=True)
+        with torch.no_grad():
+            outputs = model(**inputs)
+            query_emb = outputs.last_hidden_state.mean(dim=1)
+        query_emb = query_emb.repeat(1, repeat_factor)  # Repeat the embedding to match the graph dimension
+        return query_emb
 
 class TextSplitter:
     def __init__(self):
@@ -151,10 +161,16 @@ class Graph:
         torch.save(data, f'{save_name}/graphs.pt')
         self.graph = data
 
-    def retrieve_subgraph_pcst(self, emb_question, topk=3, topk_e=3, cost_e=0.5):
+    def retrieve_subgraph_pcst(self, question, embedder, topk=3, topk_e=3, cost_e=0.5):
+
+        q_emb_nodes = embedder.embed(question, 3)
+        q_emb_edges = embedder.embed(question, 2)
+
         c = 0.01
         if len(self.nodes) == 0 or len(self.edges) == 0:
-            desc = self.nodesto_csv(index=False) + '\n' + self.edges.to_csv(index=False,columns=['src', 'frequency', 'avg_time', 'dst'])
+            desc = self.nodes.to_csv(index=False) + '\n' + self.edges.to_csv(index=False,
+                                                                                   columns=['src', 'frequency',
+                                                                                            'avg_time', 'dst'])
             graph = Data(x=self.graph.x, edge_index=self.graph.edge_index, edge_attr=self.graph.edge_attr, num_nodes=self.graph.num_nodes)
             return graph, desc
 
@@ -162,13 +178,8 @@ class Graph:
         num_clusters = 1
         pruning = 'gw'
         verbosity_level = 0
-
-        print("emb_question shape:", emb_question.shape)
-        print("self.graph.x shape:", self.graph.x.shape)
-        print("self.graph.edge_attr shape:", self.graph.edge_attr.shape)
-
         if topk > 0:
-            n_prizes = torch.nn.CosineSimilarity(dim=-1)(emb_question, self.graph.x)
+            n_prizes = torch.nn.functional.cosine_similarity(q_emb_nodes, self.graph.x)
             topk = min(topk, self.graph.num_nodes)
             _, topk_n_indices = torch.topk(n_prizes, topk, largest=True)
 
@@ -178,7 +189,7 @@ class Graph:
             n_prizes = torch.zeros(self.graph.num_nodes)
 
         if topk_e > 0:
-            e_prizes = torch.nn.CosineSimilarity(dim=-1)(emb_question, self.graph.edge_attr)
+            e_prizes = torch.nn.functional.cosine_similarity(q_emb_edges, self.graph.edge_attr)
             topk_e = min(topk_e, e_prizes.unique().size(0))
 
             topk_e_values, _ = torch.topk(e_prizes.unique(), topk_e, largest=True)
@@ -189,14 +200,12 @@ class Graph:
                 value = min((topk_e - k) / sum(indices), last_topk_e_value)
                 e_prizes[indices] = value
                 last_topk_e_value = value * (1 - c)
-            # reduce the cost of the edges such that at least one edge is selected
-            # cost_e = min(cost_e, e_prizes.max().item()*(1-c/2))
         else:
             e_prizes = torch.zeros(self.graph.num_edges)
 
         costs = []
         edges = []
-        vritual_n_prizes = []
+        virtual_n_prizes = []
         virtual_edges = []
         virtual_costs = []
         mapping_n = {}
@@ -208,15 +217,15 @@ class Graph:
                 edges.append((src, dst))
                 costs.append(cost_e - prize_e)
             else:
-                virtual_node_id = self.graph.num_nodes + len(vritual_n_prizes)
+                virtual_node_id = self.graph.num_nodes + len(virtual_n_prizes)
                 mapping_n[virtual_node_id] = i
                 virtual_edges.append((src, virtual_node_id))
                 virtual_edges.append((virtual_node_id, dst))
                 virtual_costs.append(0)
                 virtual_costs.append(0)
-                vritual_n_prizes.append(prize_e - cost_e)
+                virtual_n_prizes.append(prize_e - cost_e)
 
-        prizes = np.concatenate([n_prizes, np.array(vritual_n_prizes)])
+        prizes = np.concatenate([n_prizes, np.array(virtual_n_prizes)])
         num_edges = len(edges)
         if len(virtual_costs) > 0:
             costs = np.array(costs + virtual_costs)
@@ -237,7 +246,7 @@ class Graph:
 
         n = self.nodes.iloc[selected_nodes]
         e = self.edges.iloc[selected_edges]
-        desc = n.to_csv(index=False) + '\n' + e.to_csv(index=False, columns=['src', 'frequency', 'avg_time', 'dst'])
+        desc = n.to_csv(index=False) + '\n' + e.to_csv(index=False, columns=['src', 'freq', 'avg_time', 'dst'])
 
         mapping = {n: i for i, n in enumerate(selected_nodes.tolist())}
 
@@ -358,9 +367,8 @@ if __name__ == '__main__':
     embedder = TextEmbedder()
     know_g.embed_graph(save_folder, embedder)
     know_g.visualize_graph()
-    question = 'How often gets something payed?'
-    emb_question = embedder.embed(question)
-    subgraph = know_g.retrieve_subgraph_pcst(emb_question)
+    question = 'What goes after start'
+    subgraph = know_g.retrieve_subgraph_pcst(question, embedder)
     subgraph.visualize_graph()
 
 
