@@ -82,13 +82,11 @@ class Graph:
 
     def visualize_graph(self):
         g = nx.DiGraph()
-
         for i, node in self.nodes.iterrows():
             g.add_node(i, label=node['node_attr'], average_cost=node['average_cost'], average_invoiced_price=node['average_invoiced_price'])
 
-        for i, (src, dst) in enumerate(self.graph.edge_index.t().tolist()):
-            g.add_edge(src, dst, frequency=self.graph.edge_attr[i][0].item(),
-                           avg_time=self.graph.edge_attr[i][1].item())
+        for i, row in self.edges.iterrows():
+            g.add_edge(row['src'], row['dst'], frequency=row['freq'], avg_time=row['avg_time'])
 
         pos = nx.spring_layout(g)
         labels = nx.get_node_attributes(g, 'label')
@@ -132,7 +130,6 @@ class Graph:
         self.set_nodes(detailed_nodes)
 
     def embed_graph(self, save_name, embedder):
-        print('Encoding graphs...')
         nodes = pd.read_csv(f"{save_name}/nodes_textualized.csv")
         edges = pd.read_csv(f"{save_name}/edges_textualized.csv")
 
