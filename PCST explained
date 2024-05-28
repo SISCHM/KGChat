@@ -1,0 +1,33 @@
+
+From file "embed_kg.py" :
+
+              we use sbert as model, which creates vectors embeddings of size 1024
+              the node embedding concatenation ('x') concatenates the embeddings of the three attributes (node_attr,average_cost,average_invoiced_price), thus we have 3 times 1024 features = 3072 features for each node. 
+              same happens with edge concatenation ('e') but now just 2 attributes (frequency,average time) , thus we have 2 times 1024 = 2048 features for each edge.
+
+When applying standard pcst retrieval code :
+
+              when reading the users query with sbert, it is embedded into 1024 features, and this is a problem since we cannot perform the cosineSimilarity from the PCST algorithm with different sized vectors.
+
+Then we have 2 solutions :
+
+                              - Change Lee´s code and group all the attributes (nodes and edges) into 1024 sized vectors.
+
+                                                                            - Problems: * we have to introduce some weighting functions to assign weights to the attributes (node_attr,average_cost,average_invoiced_price) and design it on our own.
+                                                                                        * we will end up losing information in the compressing
+
+                              - Scale the user's query and repeat it 3 and 2 times to match the nodes&edges embeddings
+
+                                                                            - Problems: * node embeddings are 3072 sized and edges embeddings are 2048 sized, so we need to create 2 query embeddings ( one to be compared with the node embeddings, 
+                                                                                        which will consist of the query repeated 3 times, the other one to be compared with the edge embeddings which will consist of the query repeated 2 times)
+                                                                                        * we are just repeating the same info ( I dont know how much will that influence on the final result )
+
+
+
+I took the second option and managed to get a final subgraph with relevant nodes depending on my input query. The problem is that the frequency and avg_time values of this subgraph are the ones from the embedding, and not the ones from the textual_edges,
+I will fix that tomorrow, alongside with the clarity of the file (create classes and clean up).
+
+The path of execution to have the same output as I have is : "dfg_to_kg" --> "embeded_kg" --> "PCST_trial" 
+
+You can experiment by testing the code with some queries.
+The function "retrieval_via_pcst" is not exactly the same on the "retrieval.py" file since I had to add the thing of repeating 3 and 2 times the query to match our embeddings, and evaluate each one when it is needed.
