@@ -15,15 +15,15 @@ import os
 import json
 from torch_geometric.data import Data
 import numpy as np
+import time
 
-MODEL_NAME = "meta-llama/Llama-2-13b-chat-hf"
 
 class LLM:
-    def __init__(self, **kwargs):
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True)
-        model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.float16, trust_remote_code=True, device_map="auto")
+    def __init__(self, model_name="meta-llama/Llama-2-13b-chat-hf", **kwargs):
+        tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+        model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, trust_remote_code=True, device_map="auto")
 
-        generation_config = GenerationConfig.from_pretrained(MODEL_NAME)
+        generation_config = GenerationConfig.from_pretrained(model_name)
         generation_config.max_new_tokens = 1024
         generation_config.temperature = 0.01
         generation_config.top_p = 0.95
@@ -38,8 +38,38 @@ class LLM:
         )
         self.hf_pipeline = HuggingFacePipeline(pipeline=text_pipeline, model_kwargs={"temperature": 0.01})
 
-    def __call__(self, prompt_text):
+    def __call__(self, q, graph=None, previous_conversation=None):
+        graph_info = graph.process_graph_data() if graph else ""
+        prompt_text = self.create_prompt(q, graph_info, previous_conversation)
         return self.hf_pipeline(prompt_text)
+
+    def create_prompt(self, question, graph_info, previous_conversation):
+        template = """
+        <s>[INST] <<SYS>>
+        Act as a Data Scientist who works in Process Analysis and talks to another Data Scientist who.
+        For the answer use the graph and all the information that come with it. If your answer contains some of the nodes, always use the nodes name instead of the index.
+        Sometimes the answer can refer to the previous answer by you and build on that, consider that.       
+        The answer should always contain full sentences with bulletpoints when appropiate. The general conversation language should be business style and your conversation partner should be treated that way. 
+  
+        <</SYS>>
+        Here is the content of the previous conversation. It always consists of an input graph, a question and your answer:
+        {prev_conv}
+        
+        Now here is the question for you to answer:
+        {q}
+        
+        And to answer the question consider this graph:
+        {graph}      
+        [/INST]
+        """
+        prompt = PromptTemplate(input_variables=["prev_conv","q","graph"], template=template)
+        prev_conv = ""
+        graph = ""
+        if previous_conversation:
+            prev_conv = previous_conversation
+        if graph_info:
+            graph = graph_info
+        return prompt.format(prev_conv=prev_conv,q=question,graph=graph)
 
 class TextEmbedder:
     def __init__(self, model='sbert'):
@@ -102,7 +132,7 @@ class Graph:
         nodes = {}  # dict
         edges = []  # list
         for index, row in input_edges.iterrows():
-            src, dst, freq, avg = row[0].split(';')
+            src, dst, freq, avg = row.iloc[0].split(';')
             src = src.strip()
             dst = dst.strip()
             avg = round(float(avg))
@@ -256,6 +286,30 @@ class Graph:
         subgraph = Graph(description=desc, graph=data, edges=e, nodes=n)
         return subgraph
 
+    def process_graph_data(self):
+        # Detailed processing of graph data can be added here.
+        graph_list = list()
+        graph_list.append(f"Graph with {len(self.nodes)} nodes and {len(self.edges)} edges.\n")
+        graph_list.append("Here are the nodes in detail:\n")
+        column_names = self.nodes.columns
+        for index, node in self.nodes.iterrows():
+            node_string = f"The index of the node is {node.iloc[1]} and the nodes name is {node.iloc[0]}. It has those attributes: "
+            for i in range(2,len(column_names)):
+                node_string += f"{column_names[i]}: {node.iloc[i]},"
+            node_string = node_string[:-1]
+            node_string += ".\n"
+            graph_list.append(node_string)
+        graph_list.append("Here are the edges in detail:\n")
+        edge_names = self.edges.columns
+        for index, edge in self.edges.iterrows():
+            edge_string = f"There is an edge from the node with index {edge.iloc[0]} to the node with index {edge.iloc[3]} and it has the attributes: "
+            for i in range(1,len(edge_names)-1):
+                edge_string += f"{edge_names[i]}: {edge.iloc[i]},"
+            edge_string = edge_string[:-1]
+            edge_string += ".\n"
+            graph_list.append(edge_string)
+        return "".join(graph_list)
+
 class EventLog:
     def __init__(self,log):
         self.log = log
@@ -333,26 +387,29 @@ class EventLog:
         knowledge_g.textualize_graph(save_name, edges, nodes)
         return knowledge_g
 
+class Conversation:
+    def __init__(self):
+        self.llm = LLM()
+        self.prev_conv = dict()
 
+    def ask_question(self, graph, question):
+        text_g = graph.process_graph_data()
+        prompt = self.llm.create_prompt(question,text_g,self.textualize_prev_conf())
+        print("Asking question, wait for response...")
+        start_time = time.time()
+        answer = self.llm(prompt)
+        print(answer)
+        end_time = time.time()
+        print(f"The generation of this answer took {(end_time-start_time):.4f} seconds")
+        graph.visualize_graph()
+        self.prev_conv[len(self.prev_conv)+1] = {'question': question, 'text_g':text_g, 'answer':answer}
 
-def test():
-    template = """
-    <s>[INST] <<SYS>>
-    Act as a Machine Learning engineer who is teaching high school students.
-    <</SYS>>
-    
-    {text} [/INST]
-    """
-
-    text = "Explain what are Deep Neural Networks in 2-3 sentences"
-    prompt = PromptTemplate(
-        input_variables=["text"],
-        template=template,
-    )
-    test = prompt.format(text=text)
-    llm = LLM()
-    result = llm(test)
-    print(result)
+    def textualize_prev_conf(self):
+        text_prev_conf =[]
+        for key, value in self.prev_conv.items():
+            conv_string = f"The {key}. question was '{value['question']}' and the inputted graph looks like this '{value['text_g']}' and the answer you created is the following '{value['answer']}'\n"
+            text_prev_conf.append(conv_string)
+        return "".join(text_prev_conf)
 
 if __name__ == '__main__':
     save_folder='test'
@@ -363,9 +420,14 @@ if __name__ == '__main__':
     know_g = event_log.create_kg(save_folder)
     embedder = TextEmbedder()
     know_g.embed_graph(save_folder, embedder)
-    know_g.visualize_graph()
-    question = 'What goes after start'
-    subgraph = know_g.retrieve_subgraph_pcst(question, embedder)
-    subgraph.visualize_graph()
+    input_question = "What are the edges with the highest Frequency?"
+    subgraph = know_g.retrieve_subgraph_pcst(input_question, embedder)
+    conv = Conversation()
+    conv.ask_question(subgraph, input_question)
+    # Can ask a second question like this:
+    # second_question = "What would be the most important edges in the Graph?"
+    # subgraph = know_g.retrieve_subgraph_pcst(second_question, embedder)
+    # conv.ask_question(subgraph, second_question)
+
 
 
