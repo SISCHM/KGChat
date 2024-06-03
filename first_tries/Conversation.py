@@ -40,6 +40,7 @@ if __name__ == '__main__':
     know_g = event_log.create_kg()
     embedder = TextEmbedder.TextEmbedder()
     know_g.embed_graph(event_log.name, embedder)
+    know_g.visualize_graph()
     input_question = "What are the edges with the highest Frequency?"
     subgraph = know_g.retrieve_subgraph_pcst(input_question, embedder)
     conv = Conversation()

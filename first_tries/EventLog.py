@@ -3,11 +3,13 @@ import pandas as pd
 import pm4py
 import Graph
 import os
+import warnings
 
 class EventLog:
     def __init__(self,file_path):
+        warnings.filterwarnings("ignore")
         if file_path.endswith(".xes"):
-            self.log = pm4py.read_xes(file_path)
+            self.log = pm4py.read_xes(file_path, disable_progress_bar= True)
         else:
             raise ValueError("Unsupported file format")
 
