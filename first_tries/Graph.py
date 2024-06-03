@@ -59,7 +59,7 @@ class Graph:
         nx.draw_networkx_nodes(g, pos, node_size=[node_sizes[node] for node in g.nodes()], node_color="lightblue", edgecolors='k', linewidths=1)
         nx.draw_networkx_labels(g, pos, labels=node_labels, font_size=10, font_color='black', font_weight='bold')
 
-        edge_labels = {(src, dst): f'Freq: {data["frequency"]}\nAvg Time: {data["avg_time"]}' for src, dst, data in g.edges(data=True)}
+        edge_labels = {(src, dst): f'Freq: {data["Frequency"]}\nAvg Time: {data["Average_time"]}' for src, dst, data in g.edges(data=True)}
         nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=8, font_color='black')
 
         plt.axis('off')

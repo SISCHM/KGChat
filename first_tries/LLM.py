@@ -3,9 +3,13 @@ from langchain import HuggingFacePipeline
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, pipeline
 from langchain import PromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+import warnings
+
+
 
 class LLM:
     def __init__(self, model_name="meta-llama/Llama-2-13b-chat-hf", **kwargs):
+        warnings.filterwarnings("ignore")
         tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
         model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, trust_remote_code=True, device_map="auto")
 
