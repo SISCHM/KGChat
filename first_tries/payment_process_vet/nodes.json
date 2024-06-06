@@ -3,231 +3,52 @@
         "concept:name": [
             "Unknown"
         ],
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "Book Treatment": {
         "concept:name": "Book Treatment",
-        "Average_invoicedPrice": 63.78460346937914,
-        "org:resource": [
-            "557",
-            "559",
-            "561",
-            "541",
-            "558",
-            "537",
-            "550",
-            "560",
-            "563",
-            "564",
-            "562",
-            "556",
-            "538",
-            "566",
-            "565",
-            "536",
-            "568",
-            "567",
-            "26",
-            "31",
-            "11",
-            "27",
-            "28",
-            "819",
-            "829",
-            "30",
-            "811",
-            "807",
-            "34",
-            "35",
-            "825",
-            "837",
-            "821",
-            "838",
-            "834",
-            "9",
-            "25",
-            "827",
-            "22",
-            "21",
-            "43",
-            "52",
-            "50",
-            "48",
-            "46",
-            "840",
-            "41",
-            "58",
-            "55",
-            "42",
-            "40",
-            "53",
-            "57",
-            "20",
-            "47",
-            "824",
-            "45",
-            "44",
-            "56",
-            "49",
-            "37",
-            "10",
-            "39",
-            "847",
-            "849",
-            "66",
-            "59",
-            "61",
-            "63",
-            "855",
-            "848",
-            "23",
-            "540",
-            "548",
-            "546",
-            "552",
-            "554",
-            "551",
-            "553",
-            "555",
-            "820",
-            "842",
-            "823",
-            "843",
-            "844",
-            "12",
-            "29",
-            "845",
-            "54",
-            "852",
-            "854",
-            "850",
-            "846",
-            "857",
-            "851",
-            "856",
-            "853",
-            "24",
-            "60",
-            "62",
-            "16",
-            "65",
-            "858",
-            "860",
-            "859",
-            "861",
-            "862",
-            "864",
-            "869",
-            "866",
-            "868",
-            "867",
-            "865",
-            "870",
-            "8",
-            "17",
-            "18",
-            "14",
-            "3",
-            "802",
-            "15",
-            "704",
-            "36",
-            "33",
-            "32",
-            "810",
-            "808",
-            "813",
-            "816",
-            "817",
-            "818",
-            "826",
-            "828",
-            "830",
-            "831",
-            "832",
-            "833",
-            "835",
-            "836",
-            "839",
-            "19",
-            "38",
-            "51",
-            "841"
-        ]
+        "Average_treatment": 107.16912168150931
     },
     "Charge Penalty": {
         "concept:name": "Charge Penalty",
-        "Average_invoicedPrice": 149.9199074858757,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "Inform Owner of Result of Vet Board Review": {
         "concept:name": "Inform Owner of Result of Vet Board Review",
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "Payment": {
         "concept:name": "Payment",
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "Provide Additional Information and Reminder": {
         "concept:name": "Provide Additional Information and Reminder",
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "Receive Result from Vet Board Review": {
         "concept:name": "Receive Result from Vet Board Review",
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "Requested Review by Insurance": {
         "concept:name": "Requested Review by Insurance",
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "0"
-        ]
+        "Average_treatment": 0.0
     },
     "Send Invoice": {
         "concept:name": "Send Invoice",
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "Send for Credit Collection": {
         "concept:name": "Send for Credit Collection",
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "Send request for Review to Vet Board": {
         "concept:name": "Send request for Review to Vet Board",
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     },
     "end": {
         "concept:name": [
             "Unknown"
         ],
-        "Average_invoicedPrice": 0.0,
-        "org:resource": [
-            "Unknown"
-        ]
+        "Average_treatment": 0.0
     }
 }

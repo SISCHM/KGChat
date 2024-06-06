@@ -1,13 +1,13 @@
-node_name,node_id,concept:name,Average_invoicedPrice,org:resource
-start,0,['Unknown'],0.0,['Unknown']
-Book Treatment,1,Book Treatment,63.78460346937914,"['557', '559', '561', '541', '558', '537', '550', '560', '563', '564', '562', '556', '538', '566', '565', '536', '568', '567', '26', '31', '11', '27', '28', '819', '829', '30', '811', '807', '34', '35', '825', '837', '821', '838', '834', '9', '25', '827', '22', '21', '43', '52', '50', '48', '46', '840', '41', '58', '55', '42', '40', '53', '57', '20', '47', '824', '45', '44', '56', '49', '37', '10', '39', '847', '849', '66', '59', '61', '63', '855', '848', '23', '540', '548', '546', '552', '554', '551', '553', '555', '820', '842', '823', '843', '844', '12', '29', '845', '54', '852', '854', '850', '846', '857', '851', '856', '853', '24', '60', '62', '16', '65', '858', '860', '859', '861', '862', '864', '869', '866', '868', '867', '865', '870', '8', '17', '18', '14', '3', '802', '15', '704', '36', '33', '32', '810', '808', '813', '816', '817', '818', '826', '828', '830', '831', '832', '833', '835', '836', '839', '19', '38', '51', '841']"
-Payment,2,Payment,0.0,['Unknown']
-Requested Review by Insurance,3,Requested Review by Insurance,0.0,['0']
-Send Invoice,4,Send Invoice,0.0,['Unknown']
-Send request for Review to Vet Board,5,Send request for Review to Vet Board,0.0,['Unknown']
-Charge Penalty,6,Charge Penalty,149.9199074858757,['Unknown']
-Inform Owner of Result of Vet Board Review,7,Inform Owner of Result of Vet Board Review,0.0,['Unknown']
-Receive Result from Vet Board Review,8,Receive Result from Vet Board Review,0.0,['Unknown']
-Send for Credit Collection,9,Send for Credit Collection,0.0,['Unknown']
-Provide Additional Information and Reminder,10,Provide Additional Information and Reminder,0.0,['Unknown']
-end,11,['Unknown'],0.0,['Unknown']
+node_name,node_id,concept:name,Average_treatment
+start,0,['Unknown'],0.0
+Book Treatment,1,Book Treatment,107.16912168150931
+Payment,2,Payment,0.0
+Requested Review by Insurance,3,Requested Review by Insurance,0.0
+Send Invoice,4,Send Invoice,0.0
+Send request for Review to Vet Board,5,Send request for Review to Vet Board,0.0
+Charge Penalty,6,Charge Penalty,0.0
+Inform Owner of Result of Vet Board Review,7,Inform Owner of Result of Vet Board Review,0.0
+Receive Result from Vet Board Review,8,Receive Result from Vet Board Review,0.0
+Send for Credit Collection,9,Send for Credit Collection,0.0
+Provide Additional Information and Reminder,10,Provide Additional Information and Reminder,0.0
+end,11,['Unknown'],0.0

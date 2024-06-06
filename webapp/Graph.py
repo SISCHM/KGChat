@@ -74,7 +74,7 @@ class Graph:
         plt.show()
 
         # Save the figure to a file
-        fig.savefig(f"{save_name}/graphs/{index}.png", format='png')
+        fig.savefig(f"chats/{save_name}/graphs/{index}.png", format='png')
 
     def textualize_graph(self, save_name, input_edges, input_nodes):
         nodes = {}  # dict
@@ -101,14 +101,14 @@ class Graph:
         detailed_nodes = pd.merge(nodes, nodes_df, on='node_name', how='left')
 
         # create csv files that contained the textualized nodes and edges for embedding
-        detailed_nodes.to_csv(f'{save_name}/nodes_textualized.csv', index=False, columns=detailed_nodes.columns)
-        edges.to_csv(f'{save_name}/edges_textualized.csv', index=False, columns=['Source_id', 'Frequency', 'Average_time', 'Destination_id'])
+        detailed_nodes.to_csv(f'chats/{save_name}/nodes_textualized.csv', index=False, columns=detailed_nodes.columns)
+        edges.to_csv(f'chats/{save_name}/edges_textualized.csv', index=False, columns=['Source_id', 'Frequency', 'Average_time', 'Destination_id'])
         self.set_edges(edges)
         self.set_nodes(detailed_nodes)
 
     def embed_graph(self, save_name, embedder):
-        nodes = pd.read_csv(f"{save_name}/nodes_textualized.csv")
-        edges = pd.read_csv(f"{save_name}/edges_textualized.csv")
+        nodes = pd.read_csv(f"chats/{save_name}/nodes_textualized.csv")
+        edges = pd.read_csv(f"chats/{save_name}/edges_textualized.csv")
 
         # depending on the type of the node attribute, embed it accordingly
         embedded_node_attrs = []
@@ -139,7 +139,7 @@ class Graph:
         data = Data(x=x, edge_index=edge_index, edge_attr=e, num_nodes=len(nodes))
 
         # save the data object to a file
-        torch.save(data, f'{save_name}/graphs.pt')
+        torch.save(data, f'chats/{save_name}/graphs.pt')
         self.graph = data
 
     def retrieve_subgraph_pcst(self, question, embedder, topk=3, topk_e=3, cost_e=0.5):

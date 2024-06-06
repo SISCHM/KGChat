@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.container {
+    display: flex;
+    width: 90%;
+    height: 90%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+.sidebar {
+    flex: 1;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.main {
+    flex: 2;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.graph {
+    flex: 2;
+    border-left: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 5px 0;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.message {
+    margin-bottom: 15px;
+}
+
+.message p {
+    margin: 5px 0;
+}
+
+.message a {
+    display: block;
+    text-align: center;
+    color: #007bff;
+}
+
+.message a:hover {
+    text-decoration: underline;
+}
+
+.center-link {
+    text-align: center;
+    margin-bottom: 15px;
+}
