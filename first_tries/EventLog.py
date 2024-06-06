@@ -102,6 +102,7 @@ class EventLog:
     def create_knowledge_graph(self):
         self.construct_dfg()
         os.makedirs(f'{self.name}', exist_ok=True)
+        os.makedirs(f'{self.name}/graphs', exist_ok=True)
         self.create_edges()
         self.create_nodes()
         knowledge_g = Graph.Graph()

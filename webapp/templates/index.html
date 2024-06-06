@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGChat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Chats</h2>
+            <ul>
+                {% for chat in chats %}
+                    <li><a href="{{ url_for('chat', chat_id=chat.id) }}">{{ chat.name }}</a></li>
+                {% endfor %}
+            </ul>
+            <form id="uploadForm" action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" style="display: none;">
+                <input type="file" id="fileInput" name="file" onchange="document.getElementById('uploadForm').submit()">
+            </form>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click();">+ Start New Chat</button>
+        </div>
+        <div class="main">
+            <p>Wähle einen Chat, um die Konversation zu sehen.</p>
+        </div>
+        <div class="graph">
+            <p>Graph wird hier angezeigt.</p>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
