@@ -1,13 +1,13 @@
-node_name,node_id,concept:name,Average_treatment
-start,0,['Unknown'],0.0
-Book Treatment,1,Book Treatment,107.16912168150931
-Payment,2,Payment,0.0
-Requested Review by Insurance,3,Requested Review by Insurance,0.0
-Send Invoice,4,Send Invoice,0.0
-Send request for Review to Vet Board,5,Send request for Review to Vet Board,0.0
-Charge Penalty,6,Charge Penalty,0.0
-Inform Owner of Result of Vet Board Review,7,Inform Owner of Result of Vet Board Review,0.0
-Receive Result from Vet Board Review,8,Receive Result from Vet Board Review,0.0
-Send for Credit Collection,9,Send for Credit Collection,0.0
-Provide Additional Information and Reminder,10,Provide Additional Information and Reminder,0.0
-end,11,['Unknown'],0.0
+node_name,node_id,concept:name,Average_treatment,Average_invoicedPrice
+start,0,['Unknown'],0.0,0.0
+Book Treatment,1,Book Treatment,107.16912168150931,63.78460346937914
+Payment,2,Payment,0.0,0.0
+Requested Review by Insurance,3,Requested Review by Insurance,0.0,0.0
+Send Invoice,4,Send Invoice,0.0,0.0
+Send request for Review to Vet Board,5,Send request for Review to Vet Board,0.0,0.0
+Charge Penalty,6,Charge Penalty,0.0,149.9199074858757
+Inform Owner of Result of Vet Board Review,7,Inform Owner of Result of Vet Board Review,0.0,0.0
+Receive Result from Vet Board Review,8,Receive Result from Vet Board Review,0.0,0.0
+Send for Credit Collection,9,Send for Credit Collection,0.0,0.0
+Provide Additional Information and Reminder,10,Provide Additional Information and Reminder,0.0,0.0
+end,11,['Unknown'],0.0,0.0

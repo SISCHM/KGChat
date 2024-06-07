@@ -1,6 +1,1 @@
-{
-    "1": {
-        "question": "What are the edges with the highest Frequency?",
-        "answer": "Test"
-    }
-}
+{"1": {"question": "What are the edges with the highest Frequency?", "answer": "Test"}, "2": {"question": "TestFrage", "sub_graph": "Example sub graph", "answer": "This is a placeholder answer", "graph": {"x": [1, 2, 3], "y": [4, 5, 6]}}, "3": {"question": "NochmalTest", "sub_graph": "Example sub graph", "answer": "This is a placeholder answer", "graph": {"x": [1, 2, 3], "y": [4, 5, 6]}}, "4": {"question": "Hallo", "sub_graph": "Example sub graph", "answer": "This is a placeholder answer", "graph": {"x": [1, 2, 3], "y": [4, 5, 6]}}}

@@ -11,15 +11,17 @@
     <div class="container">
         <div class="sidebar">
             <h2>Chats</h2>
-            <ul>
+            <ul class="chat-list">
                 {% for chat in chats %}
-                    <li><a href="{{ url_for('chat', chat_id=chat.id) }}">{{ chat.name }}</a></li>
+                    <li>
+                        <a href="{{ url_for('chat', chat_id=chat.id) }}" class="chat-link">{{ chat.name }}</a>
+                    </li>
                 {% endfor %}
             </ul>
             <form id="uploadForm" action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" style="display: none;">
                 <input type="file" id="fileInput" name="file" onchange="document.getElementById('uploadForm').submit()">
             </form>
-            <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click();">+ Start New Chat</button>
+            <button type="button" class="btn btn-primary start-new-chat" onclick="document.getElementById('fileInput').click();">+ Start New Chat</button>
         </div>
         <div class="main">
             <p>Wähle einen Chat, um die Konversation zu sehen.</p>

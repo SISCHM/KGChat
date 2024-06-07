@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Columns</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Select Columns to Include in the Knowledge Graph</h1>
+        <form action="{{ url_for('select_columns', chat_id=chat_id) }}" method="post">
+            <!-- Always selected and disabled columns -->
+            {% for column in ["concept:name", "time:timestamp", "case:concept:name"] %}
+                <div>
+                    <input type="checkbox" id="{{ column }}" name="columns" value="{{ column }}" checked disabled>
+                    <label for="{{ column }}">{{ column }}</label>
+                </div>
+            {% endfor %}
+            <!-- Other columns -->
+            {% for column in columns %}
+                {% if column not in ["concept:name", "time:timestamp", "case:concept:name"] %}
+                    <div>
+                        <input type="checkbox" id="{{ column }}" name="columns" value="{{ column }}">
+                        <label for="{{ column }}">{{ column }}</label>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <button type="submit">Save</button>
+        </form>
+    </div>
+</body>
+</html>

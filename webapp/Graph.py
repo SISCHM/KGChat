@@ -69,10 +69,8 @@ class Graph:
         nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=8, font_color='black', ax=ax)
 
         plt.axis('off')
-
         # Show the plot
-        plt.show()
-
+        # plt.show()
         # Save the figure to a file
         fig.savefig(f"chats/{save_name}/graphs/{index}.png", format='png')
 

@@ -18,10 +18,17 @@ body {
 }
 
 .sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     flex: 1;
     border-right: 1px solid #ccc;
     padding: 10px;
     overflow-y: auto;
+}
+
+.chat-list {
+    margin-bottom: auto;
 }
 
 .main {
@@ -51,6 +58,36 @@ li {
     margin: 5px 0;
 }
 
+.chat-link {
+    display: block;
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #e9ecef;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #007bff;
+    text-align: center;
+}
+
+.chat-link:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.start-new-chat {
+    margin-top: auto;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.start-new-chat:hover {
+    background-color: #0056b3;
+}
+
 button {
     margin-top: 10px;
     padding: 10px;
@@ -74,8 +111,9 @@ button:hover {
 input[type="text"] {
     padding: 10px;
     border: 1px solid #ccc;
-    width: 100%;
+    flex: 1;
     box-sizing: border-box;
+    height: 40px; /* Ensure input height matches button height */
 }
 
 .message {
@@ -99,4 +137,18 @@ input[type="text"] {
 .center-link {
     text-align: center;
     margin-bottom: 15px;
+}
+
+#questionForm {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Add gap between input and button */
+}
+
+#questionForm input {
+    flex: 1;
+}
+
+#questionForm button {
+    height: 40px; /* Ensure button height matches input height */
 }
