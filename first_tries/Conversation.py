@@ -15,7 +15,7 @@ class Conversation:
         prompt = self.llm.create_prompt(question,text_g,self.textualize_prev_conf())
         print("Asking question, wait for response...")
         start_time = time.time()
-        answer = "Test"         # self.llm(prompt)
+        answer = self.llm(prompt)
         #print(answer)
         end_time = time.time()
         print(f"The generation of this answer took {(end_time-start_time):.4f} seconds")

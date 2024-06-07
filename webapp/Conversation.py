@@ -4,19 +4,20 @@ import TextEmbedder
 import EventLog
 import sys
 import json
+import os
 
 class Conversation:
-    def __init__(self):
+    def __init__(self, know_g):
         self.llm = LLM.LLM()
         self.prev_conv = dict()
+        self.know_g = know_g
 
     def ask_question(self, graph, question):
         text_g = graph.process_graph_data()
         prompt = self.llm.create_prompt(question,text_g,self.textualize_prev_conf())
         print("Asking question, wait for response...")
         start_time = time.time()
-        answer = "Test"         # self.llm(prompt)
-        #print(answer)
+        answer = "Test" #self.llm(prompt)
         end_time = time.time()
         print(f"The generation of this answer took {(end_time-start_time):.4f} seconds")
         self.prev_conv[len(self.prev_conv)+1] = {'question': question, 'text_g':text_g, 'answer':answer}
@@ -28,9 +29,38 @@ class Conversation:
             text_prev_conf.append(conv_string)
         return "".join(text_prev_conf)
 
-    def question_to_file(self, log, question):
-        with open(f"{log.name}/conv.json", "w") as json_file:
-            json.dump({len(self.prev_conv)+1: {'question': question, 'answer':self.prev_conv[len(self.prev_conv)]['answer']}}, json_file, indent=4)
+    def question_to_file(self, save_name, question):
+        file_path = os.path.join(save_name, "conv.json")
+        print(file_path)
+        # Check if the file exists
+        if os.path.exists(file_path):
+            # Load the existing content
+            with open(file_path, "r") as json_file:
+                conv_data = json.load(json_file)
+        else:
+            # Initialize an empty dictionary if the file doesn't exist
+            conv_data = {}
+
+        # Add the new question and answer
+        conv_data[len(self.prev_conv) + 1] = {
+            'question': question,
+            'answer': self.prev_conv[len(self.prev_conv)]['answer']
+        }
+
+        # Save the updated content back to the file
+        with open(file_path, "w") as json_file:
+            json.dump(conv_data, json_file, indent=4)
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Don't pickle the LLM and TextEmbedder instances
+        state['llm'] = None
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        # Restore the LLM and TextEmbedder instances
+        self.llm = LLM.LLM()
 
 if __name__ == '__main__':
     if len(sys.argv) < 2 :
@@ -47,7 +77,7 @@ if __name__ == '__main__':
     input_question = "What are the edges with the highest Frequency?"
     subgraph = know_g.retrieve_subgraph_pcst(input_question, embedder)
     subgraph.visualize_graph(event_log.name,1)
-    conv = Conversation()
+    conv = Conversation(know_g)
     conv.ask_question(subgraph, input_question)
     conv.question_to_file(event_log, input_question)
 
