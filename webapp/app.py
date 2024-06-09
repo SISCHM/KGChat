@@ -5,6 +5,8 @@ import EventLog
 import Conversation
 import TextEmbedder
 import pickle
+import sys
+import shutil
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'chats'
@@ -12,6 +14,13 @@ app.config['ALLOWED_EXTENSIONS'] = {'xes'}
 
 def load_selected_columns(chat_id):
     selected_columns_file = os.path.join(app.config['UPLOAD_FOLDER'], chat_id, 'selected_columns.json')
+    if os.path.exists(selected_columns_file):
+        with open(selected_columns_file, 'r') as f:
+            return json.load(f)
+    return []
+
+def load_all_columns(chat_id):
+    selected_columns_file = os.path.join(app.config['UPLOAD_FOLDER'], chat_id, 'all_columns.json')
     if os.path.exists(selected_columns_file):
         with open(selected_columns_file, 'r') as f:
             return json.load(f)
@@ -35,6 +44,9 @@ def load_text_embedder(filename):
 
 def prepare_log(filename):
     event_log = EventLog.EventLog(f"{app.config['UPLOAD_FOLDER']}/{filename}/{filename}.xes")
+    all_columns = event_log.log.columns.tolist()
+    with open(f"{app.config['UPLOAD_FOLDER']}/{filename}/all_columns.json", 'w') as f:
+        json.dump(all_columns, f)
     return event_log
 
 def preprocesslog(event_log, selected_columns):
@@ -44,7 +56,7 @@ def preprocesslog(event_log, selected_columns):
     embedder = TextEmbedder.TextEmbedder()
     know_g.embed_graph(event_log.name, embedder)
     save_text_embedder(embedder, event_log.name)
-    conversation = Conversation.Conversation(know_g)
+    conversation = Conversation.Conversation(know_g)# , "UnderstandLing/llama-2-3b-chat-nl-lora")
     save_conv_to_pickle(event_log.name, conversation)
 
 def allowed_file(filename):
@@ -67,7 +79,10 @@ def load_conversation(chat_id):
     conv_file = os.path.join(app.config['UPLOAD_FOLDER'], chat_id, 'conv.json')
     if os.path.exists(conv_file):
         with open(conv_file, 'r') as f:
-            return json.load(f)
+            conv = json.load(f)
+            for key, value in conv.items():
+                value['answer'] = value['answer'].replace('\n', '<br>')
+            return conv
     return {}
 
 @app.route('/')
@@ -87,8 +102,7 @@ def chat(chat_id):
             chat_name = f.read().strip()
 
     graph_url = url_for('get_graph', chat_id=chat_id, graph_index=0)
-    event_log = EventLog.EventLog(f'chats/{chat_id}/{chat_id}.xes')
-    all_columns = event_log.log.columns.tolist()
+    all_columns = load_all_columns(chat_id)
     selected_columns = load_selected_columns(chat_id)
 
     return render_template('chat.html', chat_id=chat_id, chat_name=chat_name, conversation=conversation, chats=chats, graph_url=graph_url, graph_title="Full Graph", columns=all_columns, selected_columns=selected_columns)
@@ -105,8 +119,7 @@ def upload_file():
         new_folder_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         os.makedirs(new_folder_path, exist_ok=True)
         file.save(os.path.join(new_folder_path, file.filename))
-        event_log = prepare_log(filename)
-        all_columns = event_log.log.columns.tolist()
+        all_columns = EventLog.extract_columns_from_xes(os.path.join(app.config['UPLOAD_FOLDER'], filename, filename + ".xes"))
         return render_template('select_columns.html', chat_id=filename, columns=all_columns)
     return redirect(url_for('home'))
 
@@ -119,14 +132,11 @@ def select_columns(chat_id):
         always_selected = ["concept:name", "time:timestamp", "case:concept:name"]
         selected_columns.extend(always_selected)
         selected_columns = list(set(selected_columns))  # Remove duplicates
-        with open(f'chats/{chat_id}/selected_columns.json', 'w') as f:
+        with open(f"{app.config['UPLOAD_FOLDER']}/{chat_id}/selected_columns.json", 'w') as f:
             json.dump(selected_columns, f)
         event_log = prepare_log(chat_id)
         preprocesslog(event_log, selected_columns)
         return redirect(url_for('chat', chat_id=chat_id))
-    event_log = EventLog.EventLog(f'chats/{chat_id}/log.xes')
-    all_columns = event_log.log.columns.tolist()
-    return render_template('select_columns.html', chat_id=chat_id, columns=all_columns)
 
 @app.route('/save_columns/<chat_id>', methods=['POST'])
 def save_columns(chat_id):
@@ -136,7 +146,7 @@ def save_columns(chat_id):
     selected_columns = list(set(selected_columns))  # Remove duplicates
     if not selected_columns:
         return "You must select at least one column", 400
-    with open(f'chats/{chat_id}/selected_columns.json', 'w') as f:
+    with open(f"{app.config['UPLOAD_FOLDER']}/{chat_id}/selected_columns.json", 'w') as f:
         json.dump(selected_columns, f)
     event_log = prepare_log(chat_id)
     preprocesslog(event_log, selected_columns)
@@ -170,6 +180,7 @@ def ask_question(chat_id, question):
     embedder = load_text_embedder(chat_id)
     subgraph = conv.know_g.retrieve_subgraph_pcst(question, embedder)
     subgraph.visualize_graph(chat_id, len(conv.prev_conv)+1)
+    Conversation.check_available_ram()
     conv.ask_question(subgraph, question)
     conv.question_to_file(f"{app.config['UPLOAD_FOLDER']}/{chat_id}", question)
     save_conv_to_pickle(chat_id, conv)
@@ -181,5 +192,27 @@ def handle_ask_question(chat_id):
     ask_question(chat_id, question)
     return redirect(url_for('chat', chat_id=chat_id))
 
+@app.route('/delete_chat/<chat_id>', methods=['DELETE'])
+def delete_chat(chat_id):
+    chat_path = os.path.join(app.config["UPLOAD_FOLDER"], chat_id)
+    if os.path.isdir(chat_path):
+        shutil.rmtree(chat_path)
+    return jsonify({'success': True})
+
+@app.route('/rename_chat/<chat_id>', methods=['POST'])
+def rename_chat(chat_id):
+    chat_path = os.path.join(app.config['UPLOAD_FOLDER'], chat_id)
+    if os.path.isdir(chat_path):
+        data = request.get_json()
+        new_name = data['name'].strip()
+        info_file = os.path.join(chat_path, 'info.txt')
+        with open(info_file, 'w') as f:
+            f.write(new_name)
+    chats = get_chats()
+    return render_template('index.html', chats=chats)
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    if len(sys.argv) < 2 :
+        app.run(debug=True)
+    else:
+        app.run(debug=True, host=sys.argv[1])

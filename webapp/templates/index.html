@@ -13,8 +13,15 @@
             <h2>Chats</h2>
             <ul class="chat-list">
                 {% for chat in chats %}
-                    <li>
+                    <li class="chat-item">
                         <a href="{{ url_for('chat', chat_id=chat.id) }}" class="chat-link">{{ chat.name }}</a>
+                        <div class="dropdown">
+                            <button class="dropdown-btn">•••</button>
+                            <div class="dropdown-content">
+                                <button onclick="renameChat('{{ chat.id }}')">Rename</button>
+                                <button onclick="deleteChat('{{ chat.id }}')">Delete</button>
+                            </div>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>
@@ -24,15 +31,49 @@
             <button type="button" class="btn btn-primary start-new-chat" onclick="document.getElementById('fileInput').click();">+ Start New Chat</button>
         </div>
         <div class="main">
-            <p>Wähle einen Chat, um die Konversation zu sehen.</p>
+            <p>Choose or start a chat to see the conversation.</p>
         </div>
         <div class="graph">
-            <p>Graph wird hier angezeigt.</p>
+            <p>The graphs will be shown here.</p>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function renameChat(chatId) {
+            let newName = prompt("Enter the new name for the chat:");
+            if (newName) {
+                fetch(`/rename_chat/${chatId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: newName })
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        function deleteChat(chatId) {
+            if (confirm("Are you sure you want to delete this chat?")) {
+                fetch(`/delete_chat/${chatId}`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        response.json().then(data => {
+                            if (data.success) {
+                                window.location.href = "/";
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>
