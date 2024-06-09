@@ -33,7 +33,6 @@ class Conversation:
 
     def question_to_file(self, save_name, question):
         file_path = os.path.join(save_name, "conv.json")
-        print(file_path)
         # Check if the file exists
         if os.path.exists(file_path):
             # Load the existing content
@@ -74,7 +73,7 @@ if __name__ == '__main__':
         print("Please include an xes event log file")
         sys.exit(1)
 
-    required_ram = 16  # GB, adjust as necessary for your model
+    required_ram = 24 # GB, adjust as necessary for your model
     available_ram = check_available_ram()
     if available_ram < required_ram:
         print("Warning: Not enough RAM available to load the model.")

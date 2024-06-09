@@ -180,7 +180,7 @@ def ask_question(chat_id, question):
     embedder = load_text_embedder(chat_id)
     subgraph = conv.know_g.retrieve_subgraph_pcst(question, embedder)
     subgraph.visualize_graph(chat_id, len(conv.prev_conv)+1)
-    print(subgraph, question)
+    Conversation.check_available_ram()
     conv.ask_question(subgraph, question)
     conv.question_to_file(f"{app.config['UPLOAD_FOLDER']}/{chat_id}", question)
     save_conv_to_pickle(chat_id, conv)
