@@ -13,8 +13,15 @@
             <h2>Chats</h2>
             <ul class="chat-list">
                 {% for chat in chats %}
-                    <li>
+                    <li class="chat-item">
                         <a href="{{ url_for('chat', chat_id=chat.id) }}" class="chat-link">{{ chat.name }}</a>
+                        <div class="dropdown">
+                            <button class="dropdown-btn">•••</button>
+                            <div class="dropdown-content">
+                                <button onclick="renameChat('{{ chat.id }}')">Rename</button>
+                                <button onclick="deleteChat('{{ chat.id }}')">Delete</button>
+                            </div>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>
@@ -24,7 +31,7 @@
             <button type="button" class="btn btn-primary start-new-chat" onclick="document.getElementById('fileInput').click();">+ Start New Chat</button>
         </div>
         <div class="main">
-            <h2>Chat {{ chat_name }}</h2>
+            <h2>{{ chat_name }}</h2>
             <div class="center-link">
                 <button type="button" class="btn btn-secondary" onclick="toggleColumns()">Select Columns</button>
                 <div id="columnSelector" style="display:none;">
@@ -46,15 +53,15 @@
                         <button type="submit" class="btn btn-primary">Save</button>
                     </form>
                 </div>
-                <button type="button" class="btn btn-secondary" onclick="loadGraph('{{ chat_id }}', '0')">Vollen Graph anzeigen</button>
+                <button type="button" class="btn btn-secondary" onclick="loadGraph('{{ chat_id }}', '0')">Show full Graph</button>
             </div>
             <div class="messages">
                 {% if conversation %}
                     {% for question_id, message in conversation.items() %}
                         <div class="message">
-                            <p><strong>Du:</strong> {{ message.question }}</p>
-                            <p><strong>KGChat:</strong> {{ message.answer }}</p>
-                            <a href="#" class="btn btn-info" onclick="loadGraph('{{ chat_id }}', '{{ loop.index0 + 1 }}')">Graph anzeigen</a>
+                            <p><strong>Du:</strong> {{ ("<br>" + message.question) | safe }}</p>
+                            <p><strong>KGChat:</strong> {{ message.answer | safe }}</p>
+                            <a href="#" class="btn btn-info" onclick="loadGraph('{{ chat_id }}', '{{ loop.index0 + 1 }}')">show subgraph</a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -107,6 +114,41 @@
                 }
             });
         }
+
+        function renameChat(chatId) {
+            let newName = prompt("Enter the new name for the chat:");
+            if (newName) {
+                fetch(`/rename_chat/${chatId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: newName })
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        function deleteChat(chatId) {
+            if (confirm("Are you sure you want to delete this chat?")) {
+                fetch(`/delete_chat/${chatId}`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        response.json().then(data => {
+                            if (data.success) {
+                                window.location.href = "/";
+                            }
+                        });
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
+
+

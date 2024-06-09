@@ -4,6 +4,7 @@ import pm4py
 import Graph
 import os
 import warnings
+from lxml import etree
 
 class EventLog:
     def __init__(self,file_path):
@@ -101,3 +102,19 @@ class EventLog:
         edges = pd.read_csv(f"chats/{self.name}/edges.tsv", sep='\t')
         knowledge_g.textualize_graph(self.name, edges, nodes)
         return knowledge_g
+
+def extract_columns_from_xes(file_path):
+    # Parse the XML file
+    tree = etree.parse(file_path)
+    root = tree.getroot()
+
+    # Find all unique attributes (columns) in the first trace
+    columns = set()
+    for trace in root.findall('trace'):
+        for event in trace.findall('event'):
+            for attribute in event.findall('*'):
+                columns.add(attribute.get('key'))
+        break  # Only need the first trace for column extraction
+    columns.add("case:concept:name")
+    return list(columns)
+
