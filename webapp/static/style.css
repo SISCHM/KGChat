@@ -112,6 +112,19 @@ button:hover {
     background-color: #0056b3;
 }
 
+.btn-info {
+    background-color: #007bff; /* Change this to your desired color */
+    border-color: rgb(0, 123, 255); /* Change this to match your desired color */
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #0056b3; /* Change this to your desired hover color */
+    border-color: rgb(0, 86, 179); /* Change this to match your desired hover color */
+    color: white;
+}
+
+
 .messages {
     flex: 1;
     overflow-y: auto;
@@ -138,7 +151,7 @@ input[type="text"] {
 .message a {
     display: block;
     text-align: center;
-    color: #007bff;
+    color: white;
 }
 
 .message a:hover {

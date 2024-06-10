@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file
+from threading import Lock
 import os
 import json
 import EventLog
@@ -11,6 +12,7 @@ import shutil
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'chats'
 app.config['ALLOWED_EXTENSIONS'] = {'xes'}
+question_lock = Lock()
 
 def load_selected_columns(chat_id):
     selected_columns_file = os.path.join(app.config['UPLOAD_FOLDER'], chat_id, 'selected_columns.json')
@@ -189,7 +191,12 @@ def ask_question(chat_id, question):
 @app.route('/ask_question/<chat_id>', methods=['POST'])
 def handle_ask_question(chat_id):
     question = request.form['question']
-    ask_question(chat_id, question)
+    if question_lock.locked():
+        return jsonify({'error': "Another question is being processes. Please wait."}), 423
+
+    with question_lock:
+        ask_question(chat_id, question)
+
     return redirect(url_for('chat', chat_id=chat_id))
 
 @app.route('/delete_chat/<chat_id>', methods=['DELETE'])

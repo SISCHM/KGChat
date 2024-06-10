@@ -59,13 +59,13 @@
                 {% if conversation %}
                     {% for question_id, message in conversation.items() %}
                         <div class="message">
-                            <p><strong>Du:</strong> {{ ("<br>" + message.question) | safe }}</p>
+                            <p><strong>You:</strong> {{ ("<br>" + message.question) | safe }}</p>
                             <p><strong>KGChat:</strong> {{ message.answer | safe }}</p>
                             <a href="#" class="btn btn-info" onclick="loadGraph('{{ chat_id }}', '{{ loop.index0 + 1 }}')">show subgraph</a>
                         </div>
                     {% endfor %}
                 {% else %}
-                    <p>Keine Nachrichten vorhanden.</p>
+                    <p>No messages yet.</p>
                 {% endif %}
             </div>
             <form id="questionForm" onsubmit="askQuestion(event, '{{ chat_id }}')" class="d-flex align-items-center">
@@ -101,17 +101,51 @@
                 });
         }
 
+        let questionLock = false;
+
         function askQuestion(event, chat_id) {
             event.preventDefault();
+
+            // Chechs if another quesiton is being processes
+            if (questionLock) {
+                alert("Another question is being processed. Please wait.");
+                return;
+            }
+
+            questionLock = true;
+
             const form = document.getElementById('questionForm');
             const formData = new FormData(form);
+            const questionText = formData.get('question');
+
+            const noMessagesText = document.querySelector('.messages p');
+            if (noMessagesText && noMessagesText.textContent === "No messages yet.") {
+                noMessagesText.remove();
+            }
+
+            // Shows question directly in chat
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `<p><strong>You:</strong> ${questionText}</p><p><strong>KGChat:</strong> Generating answer, please wait...</p>`;
+            document.querySelector('.messages').appendChild(messageDiv);
+
+            form.reset();
+
             fetch(`/ask_question/${chat_id}`, {
                 method: 'POST',
                 body: formData
             }).then(response => {
                 if (response.ok) {
                     window.location.reload();
+                } else {
+                    response.json().then(data => {
+                        alert(data.error);
+                        questionLock = false;
+                    });
                 }
+            }).catch(error => {
+                alert("An error occurred. Please try again.");
+                questionLock = false;
             });
         }
 
