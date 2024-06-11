@@ -1,5 +1,6 @@
 # KGChat
 Creating a ChatBot to ease up Process Discovery Using Python
+
 To use Docker go to webapp
 $ cd webapp
 Then compile container
@@ -12,3 +13,4 @@ $ cd webapp
 Then start the app
 $ python app.py <-- for local and ip 127.0.0.1:5000
 $ python app.py 0.0.0.0 <-- for loading on your ip:5000 
+=====
