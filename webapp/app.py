@@ -2,12 +2,13 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 from threading import Lock
 import os
 import json
-import EventLog
-import Conversation
-import TextEmbedder
 import pickle
 import sys
 import shutil
+from src import EventLog
+from src import Conversation
+from src import TextEmbedder
+from src import Graph
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'chats'
@@ -27,6 +28,21 @@ def load_all_columns(chat_id):
         with open(selected_columns_file, 'r') as f:
             return json.load(f)
     return []
+
+def save_graph(graph, save_path):
+    with open(save_path, 'wb') as file:
+        pickle.dump(graph, file)
+    '''    
+    if os.path.exists(save_path):
+        print(f"Graph successfully saved at {save_path}")
+    else:
+        print(f"Failed to save graph at {save_path}")
+    '''
+
+def load_graph(load_path):
+    with open(load_path, 'rb') as file:
+        graph = pickle.load(file)
+    return graph
 
 def load_conv_from_pickle(chat_id):
     with open(f"{app.config['UPLOAD_FOLDER']}/{chat_id}/conversation.pkl", 'rb') as f:
@@ -51,10 +67,10 @@ def prepare_log(filename):
         json.dump(all_columns, f)
     return event_log
 
-def preprocesslog(event_log, selected_columns):
+def preprocesslog(event_log, selected_columns, chat_id):
     event_log.preprocess_log(selected_columns)
     know_g = event_log.create_kg()
-    know_g.visualize_graph(event_log.name, 0)
+    save_graph(know_g,os.path.join(app.config['UPLOAD_FOLDER'], chat_id, "graphs", f"0.pkl"))
     embedder = TextEmbedder.TextEmbedder()
     know_g.embed_graph(event_log.name, embedder)
     save_text_embedder(embedder, event_log.name)
@@ -103,7 +119,7 @@ def chat(chat_id):
         with open(info_file, 'r') as f:
             chat_name = f.read().strip()
 
-    graph_url = url_for('get_graph', chat_id=chat_id, graph_index=0)
+    graph_url = url_for('show_graph', chat_id=chat_id, graph_index=0)
     all_columns = load_all_columns(chat_id)
     selected_columns = load_selected_columns(chat_id)
 
@@ -137,7 +153,7 @@ def select_columns(chat_id):
         with open(f"{app.config['UPLOAD_FOLDER']}/{chat_id}/selected_columns.json", 'w') as f:
             json.dump(selected_columns, f)
         event_log = prepare_log(chat_id)
-        preprocesslog(event_log, selected_columns)
+        preprocesslog(event_log, selected_columns, chat_id)
         return redirect(url_for('chat', chat_id=chat_id))
 
 @app.route('/save_columns/<chat_id>', methods=['POST'])
@@ -151,37 +167,32 @@ def save_columns(chat_id):
     with open(f"{app.config['UPLOAD_FOLDER']}/{chat_id}/selected_columns.json", 'w') as f:
         json.dump(selected_columns, f)
     event_log = prepare_log(chat_id)
-    preprocesslog(event_log, selected_columns)
+    preprocesslog(event_log, selected_columns, chat_id)
     return redirect(url_for('chat', chat_id=chat_id))
 
 @app.route('/show_graph/<chat_id>/<graph_index>')
 def show_graph(chat_id, graph_index):
-    conversation = load_conversation(chat_id)
-    graph_index = int(graph_index)
-    if graph_index == 0:
-        graph_title = "Full Graph"
-        graph_url = url_for('get_graph', chat_id=chat_id, graph_index=0)
+    graph_path = os.path.join(app.config['UPLOAD_FOLDER'], chat_id, "graphs", f"{graph_index}.pkl")
+    if os.path.exists(graph_path):
+        graph = load_graph(graph_path)
     else:
-        message = list(conversation.values())[graph_index - 1]
-        graph_title = message['question']
-        graph_url = url_for('get_graph', chat_id=chat_id, graph_index=graph_index)
-    return jsonify(graph_url=graph_url, graph_title=graph_title)
+        print(f"Graph file not found at: {graph_path}")
+        return jsonify({'error': 'Graph file not found'}), 404
 
-@app.route('/get_graph/<chat_id>/<graph_index>')
-def get_graph(chat_id, graph_index):
-    graph_index = int(graph_index)
-    graph_file = os.path.join(app.config['UPLOAD_FOLDER'], chat_id, f'graphs/{graph_index}.png')
-    if os.path.exists(graph_file):
-        return send_file(graph_file, mimetype='image/png')
-    return "", 404
+    nodes = [{'id': idx, 'label': row['node_name']} for idx, row in graph.nodes.iterrows()]
+    edges = [{'from': row['Source_id'], 'to': row['Destination_id'], 'Freq': row['Frequency'],
+              'Avg Time': row['Average_time']} for idx, row in graph.edges.iterrows()]
+
+    graph_title = "Full Graph" if int(graph_index) == 0 else \
+    list(load_conversation(chat_id).values())[int(graph_index) - 1]['question']
+    return jsonify({'nodes': nodes, 'edges': edges, 'graph_title': graph_title})
 
 def ask_question(chat_id, question):
-    # Placeholder for actual question processing
     conv = load_conv_from_pickle(chat_id)
-    # Add the question to the conversation (placeholder logic)
     embedder = load_text_embedder(chat_id)
     subgraph = conv.know_g.retrieve_subgraph_pcst(question, embedder)
-    subgraph.visualize_graph(chat_id, len(conv.prev_conv)+1)
+    graph_path = os.path.join(app.config['UPLOAD_FOLDER'], chat_id, "graphs", f"{len(conv.prev_conv)+1}.pkl")
+    save_graph(subgraph, graph_path)
     Conversation.check_available_ram()
     conv.ask_question(subgraph, question)
     conv.question_to_file(f"{app.config['UPLOAD_FOLDER']}/{chat_id}", question)

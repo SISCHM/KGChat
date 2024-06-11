@@ -1,4 +1,3 @@
-from tqdm import tqdm
 import gensim
 import torch
 from torch import nn
@@ -6,6 +5,7 @@ import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer
 from torch.utils.data import DataLoader
 import numpy as np
+import os
 
 pretrained_repo = 'sentence-transformers/all-roberta-large-v1'
 batch_size = 256  # Adjust the batch size as needed
@@ -42,7 +42,7 @@ class Sentence_Transformer(nn.Module):
     def __init__(self, pretrained_repo):
         super(Sentence_Transformer, self).__init__()
         print(f"inherit model weights from {pretrained_repo}")
-        self.bert_model = AutoModel.from_pretrained(pretrained_repo)
+        self.bert_model = AutoModel.from_pretrained(pretrained_repo, use_auth_token=get_huggingface_token())
 
     def mean_pooling(self, model_output, attention_mask):
         token_embeddings = model_output[0]  # First element of model_output contains all token embeddings
@@ -94,7 +94,7 @@ def text2embedding_word2vec(model, tokenizer, device, text):
 def load_sbert():
 
     model = Sentence_Transformer(pretrained_repo)
-    tokenizer = AutoTokenizer.from_pretrained(pretrained_repo)
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_repo, use_auth_token=get_huggingface_token())
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
@@ -172,6 +172,18 @@ def contriever_text2embedding(model, tokenizer, device, text):
         all_embeddings = torch.zeros((0, 1024))
 
     return all_embeddings
+
+def get_huggingface_token():
+    current_dir = os.path.dirname(__file__)
+    token_file_path = os.path.join(current_dir, 'HUGGINGFACE_TOKEN.txt')
+    try:
+        with open(token_file_path, "r") as file:
+            token = file.read().strip()
+    except FileNotFoundError:
+        token = input("Please enter your Hugging Face API token: ").strip()
+        with open(token_file_path, "w") as file:
+            file.write(token)
+    return token
 
 
 load_model = {

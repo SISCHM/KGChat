@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 import pm4py
-import Graph
+from . import Graph
 import os
 import warnings
 from lxml import etree

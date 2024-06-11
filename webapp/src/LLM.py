@@ -4,12 +4,14 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, 
 from langchain import PromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import warnings
+import os
 
 class LLM:
     def __init__(self, model_name="meta-llama/Llama-2-7b-chat-hf", **kwargs):
+        token = get_huggingface_token()
         warnings.filterwarnings("ignore")
-        tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
-        model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, trust_remote_code=True, device_map="auto")
+        tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True, use_auth_token=token)
+        model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, trust_remote_code=True, device_map="auto", use_auth_token=token)
 
         generation_config = GenerationConfig.from_pretrained(model_name)
         generation_config.max_new_tokens = 1024
@@ -67,6 +69,18 @@ class TextSplitter:
 
     def split_documents(self, input_docs):
         return self.RecursiveCharacterTextSplitter(input_docs)
+
+def get_huggingface_token():
+    current_dir = os.path.dirname(__file__)
+    token_file_path = os.path.join(current_dir, 'utils', 'HUGGINGFACE_TOKEN.txt')
+    try:
+        with open(token_file_path, "r") as file:
+            token = file.read().strip()
+    except FileNotFoundError:
+        token = input("Please enter your Hugging Face API token: ").strip()
+        with open(token_file_path, "w") as file:
+            file.write(token)
+    return token
 
 if __name__ == '__main__':
     print('That´s not how you call this file')

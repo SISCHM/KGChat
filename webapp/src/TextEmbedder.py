@@ -1,5 +1,5 @@
 import torch
-from src.utils.lm_modeling import load_model, load_text2embedding
+from .utils.lm_modeling import load_model, load_text2embedding
 
 class TextEmbedder:
     def __init__(self, model='sbert'):
