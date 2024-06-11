@@ -5,9 +5,6 @@ import numpy as np
 import pandas as pd
 from pcst_fast import pcst_fast
 from torch_geometric.data import Data
-import io
-import base64
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 class Graph:
     def __init__(self, nodes=None, edges=None, description=None, graph=None):
@@ -47,7 +44,8 @@ class Graph:
             g.add_edge(row['Source_id'], row['Destination_id'], Frequency=row['Frequency'],
                        Average_time=row['Average_time'])
 
-        pos = nx.spring_layout(g, iterations=200, k=5)
+        #pos = nx.spring_layout(g, iterations=200, k=5)
+        pos = nx.kamada_kawai_layout(g)  # k measures the spacing btw nodes
 
         # adjust node size based on the label
         node_labels = nx.get_node_attributes(g, 'label')

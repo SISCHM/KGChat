@@ -1,7 +1,7 @@
 import time
-import LLM
-import TextEmbedder
-import EventLog
+from . import LLM
+from . import TextEmbedder
+from . import EventLog
 import sys
 import json
 import os
@@ -18,8 +18,7 @@ class Conversation:
         prompt = self.llm.create_prompt(question,text_g,self.textualize_prev_conf())
         print("Asking question, wait for response...")
         start_time = time.time()
-        answer = self.llm(prompt)
-        print(answer)
+        answer = "answer" #self.llm(prompt)
         end_time = time.time()
         print(f"The generation of this answer took {(end_time-start_time):.4f} seconds")
         self.prev_conv[len(self.prev_conv)+1] = {'question': question, 'text_g':text_g, 'answer':answer}
