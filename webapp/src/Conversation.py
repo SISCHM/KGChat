@@ -8,17 +8,21 @@ import os
 import psutil
 
 class Conversation:
-    def __init__(self, know_g, llm = "meta-llama/Llama-2-7b-chat-hf"):
-        self.llm = LLM.LLM(llm)
+    def __init__(self, know_g, llm = "meta-llama/Llama-2-7b-chat-hf", mode="local", gpt_model="gpt-3.5-turbo-16k"):
+        self.llm_params = {
+            'llm': llm,
+            'mode': mode,
+            'gpt_model': gpt_model
+        }
+        self.llm = LLM.LLM(mode=mode, gpt_model=gpt_model, model_name=llm)
         self.prev_conv = dict()
         self.know_g = know_g
 
     def ask_question(self, graph, question):
         text_g = graph.process_graph_data()
-        prompt = self.llm.create_prompt(question,text_g,self.textualize_prev_conf())
         print("Asking question, wait for response...")
         start_time = time.time()
-        answer = "answer" #self.llm(prompt)
+        answer = self.llm(q=question, graph_info=text_g, previous_conversation=self.textualize_prev_conf())
         end_time = time.time()
         print(f"The generation of this answer took {(end_time-start_time):.4f} seconds")
         self.prev_conv[len(self.prev_conv)+1] = {'question': question, 'text_g':text_g, 'answer':answer}
@@ -53,14 +57,19 @@ class Conversation:
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        # Don't pickle the LLM and TextEmbedder instances
+        # Don't pickle the LLM instance
         state['llm'] = None
         return state
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-        # Restore the LLM and TextEmbedder instances
-        self.llm = LLM.LLM()
+        # Restore the LLM instance using saved parameters
+        llm_params = state.get('llm_params', {})
+        self.llm = LLM.LLM(
+            mode=llm_params.get('mode', 'local'),
+            gpt_model=llm_params.get('gpt_model', 'gpt-3.5-turbo-16k'),
+            model_name=llm_params.get('llm', 'meta-llama/Llama-2-7b-chat-hf')
+        )
 
 def check_available_ram():
     available_ram = psutil.virtual_memory().available / (1024 ** 3)  # Convert bytes to GB

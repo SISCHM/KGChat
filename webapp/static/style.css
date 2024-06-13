@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 10px; /* kleiner padding-Abstand zum Rand des Fensters */
+    /*padding: 10px; /* kleiner padding-Abstand zum Rand des Fensters */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -22,7 +22,7 @@ body {
     border: 1px solid #ccc;
     background-color: rgba(255, 255, 255, 0.24);
     box-sizing: border-box; /* Hinzugefügt, um sicherzustellen, dass padding berücksichtigt wird */
-    gap: 10px; /* Minimaler Abstand zwischen den Subklassen */
+    /*gap: 10px; Minimaler Abstand zwischen den Subklassen */
 }
 
 .sidebar {

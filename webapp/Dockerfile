@@ -21,12 +21,13 @@ COPY src /app/src
 COPY static /app/static
 COPY templates /app/templates
 COPY app.py /app/app.py
+COPY config.txt /app/config.txt
 
 # Create the chats directory and set permissions
 RUN mkdir -p /app/chats && chmod -R 777 /app/chats
 
 # Ensure the environment is activated when the container starts
-ENTRYPOINT ["micromamba", "run", "-n", "g-docker", "python", "app.py", "0.0.0.0"]
+ENTRYPOINT ["micromamba", "run", "-n", "g-docker", "python", "app.py"]
 
 # Expose the port the app runs on (if needed)
 EXPOSE 5000
