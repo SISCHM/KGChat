@@ -10,10 +10,6 @@ class TextEmbedder:
         embedding = self.text2embedding(self.model, self.tokenizer, self.device, input)
         return embedding.repeat(1, multiplier)
 
-    def get_query_embedding(self, query, repeat_factor, tokenizer, model):
-        inputs = tokenizer(query, return_tensors='pt', truncation=True, padding=True)
-        with torch.no_grad():
-            outputs = model(**inputs)
-            query_emb = outputs.last_hidden_state.mean(dim=1)
-        query_emb = query_emb.repeat(1, repeat_factor)  # Repeat the embedding to match the graph dimension
-        return query_emb
+
+if __name__ == '__main__':
+    print('That´s not how you call this file')

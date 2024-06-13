@@ -118,3 +118,5 @@ def extract_columns_from_xes(file_path):
     columns.add("case:concept:name")
     return list(columns)
 
+if __name__ == '__main__':
+    print('That´s not how you call this file')

@@ -10,7 +10,7 @@ Creating a ChatBot to ease up Process Discovery Using Python
       - expects an ip address
       - defaults to 127.0.0.1 for local use only
       - use 0.0.0.0 for access through the host machines ip address, if the router forwards the ports 80->5000 for the hosts ip
-  - --llm_mode
+  - --mode
       - changes which LLM type is used
       - expects either "local" (default) or "remote"
         - local: uses a Huggingface Model which will be downloaded and run locally on your machine

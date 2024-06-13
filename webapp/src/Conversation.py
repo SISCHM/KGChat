@@ -1,8 +1,5 @@
 import time
 from . import LLM
-from . import TextEmbedder
-from . import EventLog
-import sys
 import json
 import os
 import psutil
@@ -46,7 +43,7 @@ class Conversation:
             conv_data = {}
 
         # Add the new question and answer
-        conv_data[len(self.prev_conv) + 1] = {
+        conv_data[len(self.prev_conv)] = {
             'question': question,
             'answer': self.prev_conv[len(self.prev_conv)]['answer']
         }
@@ -77,32 +74,4 @@ def check_available_ram():
     return available_ram
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2 :
-        print("Please include an xes event log file")
-        sys.exit(1)
-
-    required_ram = 24 # GB, adjust as necessary for your model
-    available_ram = check_available_ram()
-    if available_ram < required_ram:
-        print("Warning: Not enough RAM available to load the model.")
-    else:
-        print("Sufficient RAM available to load the model.")
-
-    event_log_file = sys.argv[1]
-    event_log = EventLog.EventLog(event_log_file)
-    event_log.preprocess_log(["severityInjury", "case:concept:name", "treatment", "concept:name", "animalClass", "time:timestamp", "payment"])
-    know_g = event_log.create_kg()
-    know_g.visualize_graph(event_log.name,0)
-    embedder = TextEmbedder.TextEmbedder()
-    know_g.embed_graph(event_log.name, embedder)
-    input_question = "What are the edges with the highest Frequency?"
-    subgraph = know_g.retrieve_subgraph_pcst(input_question, embedder)
-    subgraph.visualize_graph(event_log.name,1)
-    conv = Conversation(know_g)
-    conv.ask_question(subgraph, input_question)
-    conv.question_to_file("", input_question)
-
-    # Can ask a second question like this:
-    second_question = "What would be the most important edges in the Graph?"
-    subgraph = know_g.retrieve_subgraph_pcst(second_question, embedder)
-    conv.ask_question(subgraph, second_question)
+    print('That´s not how you call this file')
