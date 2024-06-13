@@ -16,3 +16,4 @@ dependencies:
       - gensim
       - scipy==1.10.1
       - accelerate
+      - openai

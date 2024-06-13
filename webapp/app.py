@@ -5,6 +5,7 @@ import json
 import pickle
 import sys
 import shutil
+import argparse
 from src import EventLog
 from src import Conversation
 from src import TextEmbedder
@@ -14,6 +15,14 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'chats'
 app.config['ALLOWED_EXTENSIONS'] = {'xes'}
 question_lock = Lock()
+LLM_MODE = "local"
+LLM_MODEL="meta-llama/Llama-2-7b-chat-hf"
+GPT_MODEL = "gpt-3.5-turbo-16k"
+
+def read_config_file(config_file):
+    with open(config_file, 'r') as file:
+        args = file.read().split()
+    return args
 
 def load_selected_columns(chat_id):
     selected_columns_file = os.path.join(app.config['UPLOAD_FOLDER'], chat_id, 'selected_columns.json')
@@ -74,7 +83,7 @@ def preprocesslog(event_log, selected_columns, chat_id):
     embedder = TextEmbedder.TextEmbedder()
     know_g.embed_graph(event_log.name, embedder)
     save_text_embedder(embedder, event_log.name)
-    conversation = Conversation.Conversation(know_g)# , "UnderstandLing/llama-2-3b-chat-nl-lora")
+    conversation = Conversation.Conversation(know_g=know_g, llm=LLM_MODEL, mode=LLM_MODE, gpt_model=GPT_MODEL)
     save_conv_to_pickle(event_log.name, conversation)
 
 def allowed_file(filename):
@@ -180,8 +189,8 @@ def show_graph(chat_id, graph_index):
         return jsonify({'error': 'Graph file not found'}), 404
 
     nodes = [{'id': idx, 'label': row['node_name']} for idx, row in graph.nodes.iterrows()]
-    edges = [{'from': row['Source_id'], 'to': row['Destination_id'], 'Freq': row['Frequency'],
-              'Avg Time': row['Average_time']} for idx, row in graph.edges.iterrows()]
+    edges = [{'from': row['Source_id'], 'to': row['Destination_id'], 'Frequency': row['Frequency'],
+              'Average_time': row['Average_time']} for idx, row in graph.edges.iterrows()]
 
     graph_title = "Full Graph" if int(graph_index) == 0 else \
     list(load_conversation(chat_id).values())[int(graph_index) - 1]['question']
@@ -229,8 +238,23 @@ def rename_chat(chat_id):
     chats = get_chats()
     return render_template('index.html', chats=chats)
 
+
 if __name__ == '__main__':
-    if len(sys.argv) < 2 :
-        app.run(debug=True)
-    else:
-        app.run(debug=True, host=sys.argv[1])
+    parser = argparse.ArgumentParser(description='Start the application with optional host parameter.')
+    parser.add_argument('--host', type=str, help='Host address for the Flask app', default='127.0.0.1')
+    parser.add_argument('--mode', type=str, help='LLM Mode (local/remote)', default='local')
+    parser.add_argument('--llm_model', type=str, help='LLM Model', default='meta-llama/Llama-2-7b-chat-hf')
+    parser.add_argument('--gpt_model', type=str, help='GPT Model', default='gpt-3.5-turbo-16k')
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode')
+
+    config_file = "config.txt"
+    config_args = read_config_file(config_file)
+    args = parser.parse_args(config_args)
+
+    LLM_MODE = args.mode
+    LLM_MODEL = args.llm_model
+    GPT_MODEL = args.gpt_model
+    host = args.host
+    debug = args.debug
+
+    app.run(debug=debug, host=host)

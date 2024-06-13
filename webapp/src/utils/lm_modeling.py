@@ -40,9 +40,11 @@ class Dataset(torch.utils.data.Dataset):
 class Sentence_Transformer(nn.Module):
 
     def __init__(self, pretrained_repo):
+        token = get_huggingface_token()
+        print("Token: ",token)
         super(Sentence_Transformer, self).__init__()
         print(f"inherit model weights from {pretrained_repo}")
-        self.bert_model = AutoModel.from_pretrained(pretrained_repo, use_auth_token=get_huggingface_token())
+        self.bert_model = AutoModel.from_pretrained(pretrained_repo, use_auth_token=token)
 
     def mean_pooling(self, model_output, attention_mask):
         token_embeddings = model_output[0]  # First element of model_output contains all token embeddings
