@@ -3,7 +3,6 @@ from threading import Lock
 import os
 import json
 import pickle
-import sys
 import shutil
 import argparse
 from src import EventLog
@@ -15,9 +14,9 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'chats'
 app.config['ALLOWED_EXTENSIONS'] = {'xes'}
 question_lock = Lock()
-LLM_MODE = "local"
-LLM_MODEL="meta-llama/Llama-2-7b-chat-hf"
-GPT_MODEL = "gpt-3.5-turbo-16k"
+LLM_MODE = None
+LLM_MODEL= None
+GPT_MODEL = None
 
 def read_config_file(config_file):
     with open(config_file, 'r') as file:
@@ -41,12 +40,6 @@ def load_all_columns(chat_id):
 def save_graph(graph, save_path):
     with open(save_path, 'wb') as file:
         pickle.dump(graph, file)
-    '''    
-    if os.path.exists(save_path):
-        print(f"Graph successfully saved at {save_path}")
-    else:
-        print(f"Failed to save graph at {save_path}")
-    '''
 
 def load_graph(load_path):
     with open(load_path, 'rb') as file:

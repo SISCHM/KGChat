@@ -33,6 +33,43 @@ def get_openai_api_key():
     return key
 
 
+def create_prompt(question, graph_info, previous_conversation):
+    template = """
+    <s>[INST] <<SYS>>
+    Act as a Data Scientist who works in Process Analysis and talks to another Data Scientist.
+    For the answer use the graph and all the information that come with it. If your answer contains some of the nodes, always use the nodes name instead of the index and do not mention the indexes, also when talking about the edges use the corresponding names of the nodes instead of their indexes.
+    Sometimes the answer can refer to the previous answer by you and build on that, consider that.       
+    The answer should always contain full sentences with bulletpoints when appropriate. The general conversation language should be business style and your conversation partner should be treated that way. 
+
+    <</SYS>>
+    Here is the content of the previous conversation. It always consists of an input graph, a question and your answer:
+    {prev_conv}
+
+    Now here is the question for you to answer:
+    {q}
+
+    And to answer the question consider this graph:
+    {graph}      
+    [/INST]
+    """
+    prompt = PromptTemplate(input_variables=["prev_conv", "q", "graph"], template=template)
+    prev_conv = previous_conversation if previous_conversation else ""
+    graph = graph_info if graph_info else ""
+    return prompt.format(prev_conv=prev_conv, q=question, graph=graph)
+
+
+def create_messages(question, graph, previous_conversation):
+    messages = [
+        {"role": "system", "content": "Act as a Data Scientist who works in Process Analysis and talks to another Data Scientist. For the answer use the graph and all the information that come with it. If your answer contains some of the nodes, always use the nodes name instead of the index and do not mention the indexes, also when talking about the edges use the corresponding names of the nodes instead of their indexes. Sometimes the answer can refer to the previous answer by you and build on that, consider that. The answer should always contain full sentences with bulletpoints when appropriate. The general conversation language should be business style and your conversation partner should be treated that way. The answer should be short but precise"}
+    ]
+    if previous_conversation:
+        messages.append({"role": "user", "content": previous_conversation})
+    if graph:
+        messages.append({"role": "user", "content": f"Graph information: {graph}"})
+    messages.append({"role": "user", "content": f"Here ist the question: {question}"})
+    return messages
+
+
 class LLM:
     def __init__(self, mode='local', model_name="meta-llama/Llama-2-7b-chat-hf", gpt_model="gpt-3.5-turbo-16k", **kwargs):
         self.mode = mode.lower()
@@ -71,10 +108,10 @@ class LLM:
 
     def __call__(self, q, graph_info=None, previous_conversation=None):
         if self.mode == 'local':
-            prompt_text = self.create_prompt(q, graph_info, previous_conversation)
+            prompt_text = create_prompt(q, graph_info, previous_conversation)
             return self.model(prompt_text)
         elif self.mode == 'remote':
-            messages = self.create_messages(q, graph_info, previous_conversation)
+            messages = create_messages(q, graph_info, previous_conversation)
             response = self.model.chat.completions.create(
                 model=self.gpt_model,
                 messages=messages,
@@ -84,44 +121,7 @@ class LLM:
                 frequency_penalty=0,
                 presence_penalty=0
             )
-            print(response)
             return response.choices[0].message.content
-
-
-    def create_prompt(self, question, graph_info, previous_conversation):
-        template = """
-        <s>[INST] <<SYS>>
-        Act as a Data Scientist who works in Process Analysis and talks to another Data Scientist.
-        For the answer use the graph and all the information that come with it. If your answer contains some of the nodes, always use the nodes name instead of the index.
-        Sometimes the answer can refer to the previous answer by you and build on that, consider that.       
-        The answer should always contain full sentences with bulletpoints when appropriate. The general conversation language should be business style and your conversation partner should be treated that way. 
-
-        <</SYS>>
-        Here is the content of the previous conversation. It always consists of an input graph, a question and your answer:
-        {prev_conv}
-
-        Now here is the question for you to answer:
-        {q}
-
-        And to answer the question consider this graph:
-        {graph}      
-        [/INST]
-        """
-        prompt = PromptTemplate(input_variables=["prev_conv", "q", "graph"], template=template)
-        prev_conv = previous_conversation if previous_conversation else ""
-        graph = graph_info if graph_info else ""
-        return prompt.format(prev_conv=prev_conv, q=question, graph=graph)
-
-    def create_messages(self, question, graph, previous_conversation):
-        messages = [
-            {"role": "system", "content": "Act as a Data Scientist who works in Process Analysis and talks to another Data Scientist. For the answer use the graph and all the information that come with it. If your answer contains some of the nodes, always use the nodes name instead of the index. Sometimes the answer can refer to the previous answer by you and build on that, consider that. The answer should always contain full sentences with bulletpoints when appropriate. The general conversation language should be business style and your conversation partner should be treated that way. The answer should be short but precise"}
-        ]
-        if previous_conversation:
-            messages.append({"role": "user", "content": previous_conversation})
-        if graph:
-            messages.append({"role": "user", "content": f"Graph information: {graph}"})
-        messages.append({"role": "user", "content": f"Here ist the question: {question}"})
-        return messages
 
 
 class TextSplitter:

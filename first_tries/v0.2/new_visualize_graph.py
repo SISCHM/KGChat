@@ -16,7 +16,7 @@
     def visualize_graph(self):
         g = nx.DiGraph()
         for i, node in self.nodes.iterrows():
-            label = self.split_label(node['node_attr'])
+            label = split_label(node['node_attr'])
             g.add_node(i, label=label, average_cost=node['average_cost'], average_invoiced_price=node['average_invoiced_price'])
 
         for i, row in self.edges.iterrows():

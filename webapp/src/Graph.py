@@ -6,6 +6,21 @@ import pandas as pd
 from pcst_fast import pcst_fast
 from torch_geometric.data import Data
 
+
+def split_label(text, max_line_length=10):
+    words = text.split(' ')
+    lines = []
+    current_line = words[0]
+    for word in words[1:]:
+        if len(current_line) + len(word) + 1 <= max_line_length:
+            current_line += ' ' + word
+        else:
+            lines.append(current_line)
+            current_line = word
+    lines.append(current_line)
+    return '\n'.join(lines)
+
+
 class Graph:
     def __init__(self, nodes=None, edges=None, description=None, graph=None):
         self.nodes = nodes
@@ -19,25 +34,12 @@ class Graph:
     def set_nodes(self, nodes):
         self.nodes = nodes
 
-    def split_label(self, text, max_line_length=10):
-        words = text.split(' ')
-        lines = []
-        current_line = words[0]
-        for word in words[1:]:
-            if len(current_line) + len(word) + 1 <= max_line_length:
-                current_line += ' ' + word
-            else:
-                lines.append(current_line)
-                current_line = word
-        lines.append(current_line)
-        return '\n'.join(lines)
-
     def visualize_graph(self, save_name, index):
         g = nx.DiGraph()
         node_attributes = self.nodes.columns.tolist()
         for i, node in self.nodes.iterrows():
             node_attr_dict = {attr: node[attr] for attr in node_attributes}
-            node_attr_dict['label'] = self.split_label(node['node_name'])
+            node_attr_dict['label'] = split_label(node['node_name'])
             g.add_node(i, **node_attr_dict)
 
         for i, row in self.edges.iterrows():
@@ -259,3 +261,6 @@ class Graph:
             edge_string += ".\n"
             graph_list.append(edge_string)
         return "".join(graph_list)
+
+if __name__ == '__main__':
+    print('That´s not how you call this file')
