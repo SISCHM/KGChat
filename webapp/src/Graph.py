@@ -83,9 +83,9 @@ class Graph:
             dst = dst.strip()
             avg = round(float(avg))
             if src not in nodes:
-                nodes[src] = len(nodes)  # id of node
+                nodes[src] = len(nodes)  # id of source node
             if dst not in nodes:
-                nodes[dst] = len(nodes)  # id of node
+                nodes[dst] = len(nodes)  # id of destination node
             edges.append({'Source_id': nodes[src], 'Frequency': freq, 'Average_time': avg, 'Destination_id': nodes[dst]})
         nodes = pd.DataFrame(nodes.items(), columns=['node_name', 'node_id'])
         edges = pd.DataFrame(edges)

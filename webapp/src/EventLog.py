@@ -50,12 +50,12 @@ class EventLog:
                 file.write(f"{end_act};end;{freq};0\n")
 
     def create_nodes(self):
-        # Grouped the log by the activity name and for each activity compute the avg cost, avg invoiced price and resources involved for all its instances
+        # grouped the log by the activity name and for each activity, compute the average value of every numerical attribute or create a list of unique values for every non-numerical attribute 
         columns = self.log.columns.tolist()
         aggregation = {col: ('mean' if pd.api.types.is_numeric_dtype(self.log[col]) else lambda x: list(x.unique())) for col in columns if col not in ["concept:name", "case:concept:name"] and "timestamp" not in col}
         log = self.log.groupby("concept:name").agg(aggregation).reset_index()
 
-        # create a dict with every key being an unique activity and its values being its relevant attributes and values
+        # create a dict with every key being an unique activity and its values being the relevant attributes and values
         columns = log.columns.tolist()
         initial_dict = {}
         for _, row in log.iterrows():
