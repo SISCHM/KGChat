@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGChat - Chat {{ chat_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Chats</h2>
+            <ul class="chat-list">
+                {% for chat in chats %}
+                    <li class="chat-item">
+                        <a href="{{ url_for('chat', chat_id=chat.id) }}" class="chat-link">{{ chat.name }}</a>
+                        <div class="dropdown">
+                            <button class="dropdown-btn">•••</button>
+                            <div class="dropdown-content">
+                                <button onclick="renameChat('{{ chat.id }}')">Rename</button>
+                                <button onclick="deleteChat('{{ chat.id }}')">Delete</button>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <form id="uploadForm" action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" style="display: none;">
+                <input type="file" id="fileInput" name="file" onchange="document.getElementById('uploadForm').submit()">
+            </form>
+            <button type="button" class="btn btn-primary start-new-chat" onclick="document.getElementById('fileInput').click();">+ Start New Chat</button>
+        </div>
+        <div class="main">
+            <h2>{{ chat_name }}</h2>
+            <div class="center-link">
+                <button type="button" class="btn btn-secondary" onclick="toggleColumns()">Select Columns</button>
+                <div id="columnSelector" style="display:none;">
+                    <form id="columnsForm" action="{{ url_for('save_columns', chat_id=chat_name) }}" method="post">
+                        {% for column in ["concept:name", "time:timestamp", "case:concept:name"] %}
+                            <div>
+                                <input type="checkbox" id="{{ column }}" name="columns" value="{{ column }}" checked disabled>
+                                <label for="{{ column }}">{{ column }}</label>
+                            </div>
+                        {% endfor %}
+                        {% for column in columns %}
+                            {% if column not in ["concept:name", "time:timestamp", "case:concept:name"] %}
+                                <div>
+                                    <input type="checkbox" id="{{ column }}" name="columns" value="{{ column }}" {% if column in selected_columns %}checked{% endif %}>
+                                    <label for="{{ column }}">{{ column }}</label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="loadGraph('{{ chat_id }}', '0')">Show full Graph</button>
+            </div>
+            <div class="messages">
+                {% if conversation %}
+                    {% for question_id, message in conversation.items() %}
+                        <div class="message">
+                            <p><strong>You:</strong> {{ ("<br>" + message.question) | safe }}</p>
+                            <p><strong>KGChat:</strong> {{ message.answer | safe }}</p>
+                            <a href="#" class="btn btn-info" onclick="loadGraph('{{ chat_id }}', '{{ loop.index0 + 1 }}')">show subgraph</a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No messages yet.</p>
+                {% endif %}
+            </div>
+            <form id="questionForm" onsubmit="askQuestion(event, '{{ chat_id }}')" class="d-flex align-items-center">
+                <input type="text" name="question" placeholder="Type a message..." required>
+                <button type="submit" class="btn btn-primary">Ask</button>
+            </form>
+        </div>
+        <div class="graph">
+            <h2 id="graphTitle">Full Graph</h2>
+            <div id="graphContainer"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function toggleColumns() {
+            const columnSelector = document.getElementById('columnSelector');
+            if (columnSelector.style.display === 'none') {
+                columnSelector.style.display = 'block';
+            } else {
+                columnSelector.style.display = 'none';
+            }
+        }
+
+        
+   
+        function formatTime(seconds) {
+            if (seconds >= 365 * 24 * 3600) {
+                let years = Math.floor(seconds / (365 * 24 * 3600));
+                seconds %= 365 * 24 * 3600;
+                let months = Math.floor(seconds / (30 * 24 * 3600));
+                if (months == 0) return `${years}`;
+                else return `${years}y ${months}m`;
+            } else if (seconds >= 30 * 24 * 3600) {
+                let months = Math.floor(seconds / (30 * 24 * 3600));
+                seconds %= 30 * 24 * 3600;
+                let days = Math.floor(seconds / (24 * 3600));
+                if (days == 0) return `${months}m`;
+                else return `${months}m ${days}d`;
+            } else if (seconds >= 24 * 3600) {
+                let days = Math.floor(seconds / (24 * 3600));
+                seconds %= 24 * 3600;
+                let hours = Math.floor(seconds / 3600);
+                if (hours == 0) return `${days}d`;
+                else return `${days}d ${hours}h`;
+            } else if (seconds >= 3600) {
+                let hours = Math.floor(seconds / 3600);
+                let minutes = Math.floor((seconds % 3600) / 60);
+                if (minutes == 0) return `${hours}h`;
+                else return `${hours}h ${minutes}m`;
+            } else if (seconds >= 60) {
+                let minutes = Math.floor(seconds / 60);
+                let sec = seconds % 60;
+                if (sec == 0) return `${minutes}m`;
+                return `${minutes}m ${sec}s`;
+            } else {
+                if (seconds == 0) return `Instant`;
+                return `${seconds}s`;
+            }
+        }
+
+        function loadGraph(chat_id, graph_index) {
+            fetch(`/show_graph/${chat_id}/${graph_index}`)
+                .then(response => response.json())
+                .then(data => {
+                    var nodes = new vis.DataSet(data.nodes.map(node => {
+                        var title = `ID: ${node.id}<br>Name: ${node.label}`;
+                        for (var key in node) {
+                            if (node.hasOwnProperty(key) && key !== 'node_id' && key !== 'node_name' && key !== 'id' && key !== 'label' && key !== 'concept:name') {
+                                title += `<br>${key}: ${node[key]}`;
+                            }
+                        }
+                        return {
+                            id: node.id,
+                            label: node.label,
+                            title: title
+                        };
+                    }));
+                    var edges = new vis.DataSet(data.edges.map(edge => ({
+                        from: edge.from,
+                        to: edge.to,
+                        label: `Freq: ${edge.Frequency}\n Avg Time: ${formatTime(edge.Average_time)}`,
+                        arrows: 'to',  
+                        font: { align: 'top' }
+                    })));
+                    var container = document.getElementById('graphContainer');
+                    var graphData = {
+                        nodes: nodes,
+                        edges: edges
+                    };
+                    var options = {
+                        edges: {
+                            width: 2,
+                            color: {
+                                color: '#4169E1',
+                                highlight: '#4169E1',
+                                hover: '#4169E1',
+                                inherit: 'from',
+                                opacity: 1.0
+                            },
+                            arrows: {
+                                to: {
+                                    enabled: true,
+                                    scaleFactor: 1.5
+                                }
+                            }
+                        },
+                        physics: {
+                            enabled: true
+                        },
+                        interaction: {
+                            hover: true 
+                        },
+                    };
+                    var network = new vis.Network(container, graphData, options);
+                    document.getElementById('graphTitle').textContent = data.graph_title;
+                });
+        }
+
+
+        let questionLock = false;
+
+        function askQuestion(event, chat_id) {
+            event.preventDefault();
+
+            // Chechs if another quesiton is being processes
+            if (questionLock) {
+                alert("Another question is being processed. Please wait.");
+                return;
+            }
+
+            questionLock = true;
+
+            const form = document.getElementById('questionForm');
+            const formData = new FormData(form);
+            const questionText = formData.get('question');
+
+            const noMessagesText = document.querySelector('.messages p');
+            if (noMessagesText && noMessagesText.textContent === "No messages yet.") {
+                noMessagesText.remove();
+            }
+
+            // Shows question directly in chat
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `<p><strong>You:</strong> ${questionText}</p><p><strong>KGChat:</strong> Generating answer, please wait...</p>`;
+            document.querySelector('.messages').appendChild(messageDiv);
+
+            form.reset();
+
+            fetch(`/ask_question/${chat_id}`, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    response.json().then(data => {
+                        alert(data.error);
+                        questionLock = false;
+                    });
+                }
+            }).catch(error => {
+                alert("An error occurred. Please try again.");
+                questionLock = false;
+            });
+        }
+
+        function renameChat(chatId) {
+            let newName = prompt("Enter the new name for the chat:");
+            if (newName) {
+                fetch(`/rename_chat/${chatId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: newName })
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        function deleteChat(chatId) {
+            if (confirm("Are you sure you want to delete this chat?")) {
+                fetch(`/delete_chat/${chatId}`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        response.json().then(data => {
+                            if (data.success) {
+                                window.location.href = "/";
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
