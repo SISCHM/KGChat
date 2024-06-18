@@ -18,6 +18,10 @@ LLM_MODE = None
 LLM_MODEL= None
 GPT_MODEL = None
 
+# ensure the UPLOAD_FOLDER 'chats' exists
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
 def read_config_file(config_file):
     with open(config_file, 'r') as file:
         args = file.read().split()
