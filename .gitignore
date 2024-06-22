@@ -172,5 +172,3 @@ webapp/chats/
 # ignore the config files with token/key
 webapp/source/utils/HUGGINGFACE_TOKEN.txt
 webapp/source/utils/OPENAI_API_KEY.txt
-
-User Manual
