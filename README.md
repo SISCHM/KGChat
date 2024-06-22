@@ -125,7 +125,7 @@ The questions and the corresponding generated answers will be displayed above th
 
 After clicking on the `show subgraph` button, the subgraph will be displayed on the right side of the conversation section. Similar to the full graph, the subgraph is also interactive. Above the subgraph is the corresponding user's question that is contextually related to the subgraph.  
 
-<img src="User Manual/11.png">
+<img src="User Manual/11.PNG">
 
 ### Starting New Chat Session
 
