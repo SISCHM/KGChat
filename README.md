@@ -111,7 +111,7 @@ To see the complete knowledge graph generated from the given event log, click on
 
 The displayed graph is not a static image, so it is possible to interact with it by clicking on the nodes or edges and moving your mouse around. On top of that, by hovering above a node in the graph, information regarding the node will be shown. 
 
-<img src="User Manual/7.png">
+<img src="User Manual/7.PNG">
 
 ### Chatting with the ChatBot
 
