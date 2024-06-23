@@ -171,18 +171,19 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
     - Description: The application becomes unresponsive or crashes during the generation of subgraphs.
     - Possible Cause: Large event log size or insufficient system resources.
     - Solution:
-        - Log Size: Try using a smaller event log.
-        - System Resources: Ensure your system meets the minimum requirements and has sufficient memory.
-        - Column Selection: Reduce the number of selected columns to minimize processing load.
+        - Ensure your system meets the minimum requirements and has sufficient memory.
+        - Reduce the number of selected columns to minimize processing load.
+        - Try using a smaller event log.
 
 ### System Errors and Messages
 
 #### Error: "This model's maximum length is 16385 tokens. However, you requested XXXXX tokens"
     - Description: This error occurs when the combined length of the prompt and the expected response exceeds the model's limit.
     - Solution:
-        - Reduce Input Length: Shorten the questions or context provided.
-        - Summarize Context: Summarize previous interactions to fit within the token limit.
-        - Adjust Configuration: Ensure that the maximum tokens for responses are set appropriately.
+        - Shorten the questions or context provided.
+        - Summarize previous interactions to fit within the token limit.
+        - Ensure that the maximum tokens for responses are set appropriately
+        - Start a new conversation.
 
         
 ## Frequently Asked Questions (FAQ)
@@ -200,7 +201,7 @@ A: Ensure your system meets the hardware requirements. Reduce the size of the ev
 A: KGChat supports multiple languages. You can pose questions in your preferred language, and the application will process and respond accordingly.
 
 ### Q: How do I select or change the attributes for my knowledge graph?
-A: After importing the event log, you can select the attributes by clicking on the 'Select Columns' button. To change the attributes later, click on the same button and update your selection.
+A: After importing the event log, you can select the attributes by clicking on the `Select Columns` button. To change the attributes later, click on the same button and update your selection.
 
 ### Q: How do I handle large event logs that slow down processing?
 A: Try reducing the size of the event log or selecting fewer attributes for analysis. Ensure your system has adequate resources to handle large files.
