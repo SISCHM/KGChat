@@ -157,5 +157,33 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
 <img src="User Manual/Picture8.PNG">
 
 ## Troubleshooting
+
+### Common Issues and Solutions
+
+Issue 1: Error loading .xes files
+    - Description: The application fails to load event logs in formats other than .xes, ¿displaying an error message?.
+    - Possible Cause: KGChat supports only .xes format for event logs.
+    - Solution:
+        - File Format: Ensure the event log is in .xes format.
+        - File Integrity: Check that the .xes file is not corrupt and is properly formatted.
+        
+Issue 2: Application crashes when generating subgraphs
+    - Description: The application becomes unresponsive or crashes during the generation of subgraphs.
+    - Possible Cause: Large event log size or insufficient system resources.
+    - Solution:
+        - Log Size: Try using a smaller event log.
+        - System Resources: Ensure your system meets the minimum requirements and has sufficient memory.
+        - Column Selection: Reduce the number of selected columns to minimize processing load.
+
+### System Errors and Messages
+
+Error: "This model's maximum length is 16385 tokens. However, you requested XXXXX tokens"
+    - Description: This error occurs when the combined length of the prompt and the expected response exceeds the model's limit.
+    - Solution:
+        - Reduce Input Length: Shorten the questions or context provided.
+        - Summarize Context: Summarize previous interactions to fit within the token limit.
+        - Adjust Configuration: Ensure that the maximum tokens for responses are set appropriately.
+
+        
 ## FAQ
 ## Glossary and Index
