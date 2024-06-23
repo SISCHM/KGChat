@@ -185,5 +185,15 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
         - Adjust Configuration: Ensure that the maximum tokens for responses are set appropriately.
 
         
-## FAQ
+## Frequently Asked Questions (FAQ)
+
+### Q: How do I configure the API keys for OpenAI and Huggingface?
+A: Place your API keys in the corresponding files located in webapp/src/utils/. For OpenAI, use OPENAI_API_KEY.txt, and for Huggingface, use HUGGINGFACE_TOKEN.txt.
+
+### Q: What should I do if the event log processing is slow?
+A: Ensure your system meets the hardware requirements. Reduce the size of the event log or select fewer attributes to process.
+
+### Q: How can I change the language of the chatbot responses?
+A: KGChat supports multiple languages. You can pose questions in your preferred language, and the application will process and respond accordingly.
+
 ## Glossary and Index
