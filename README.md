@@ -187,13 +187,24 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
         
 ## Frequently Asked Questions (FAQ)
 
+### Q: How can I change the configurations for the LLM models?
+A: Configurations can be adjusted in the 'config.txt' file inside the 'webapp' folder. You can change settings like the LLM model, GPT model, and debugging options.
+
 ### Q: How do I configure the API keys for OpenAI and Huggingface?
-A: Place your API keys in the corresponding files located in webapp/src/utils/. For OpenAI, use OPENAI_API_KEY.txt, and for Huggingface, use HUGGINGFACE_TOKEN.txt.
+A: Place your API keys in the corresponding files located in 'webapp/src/utils/'. For OpenAI, use 'OPENAI_API_KEY.txt', and for Huggingface, use 'HUGGINGFACE_TOKEN.txt'.
 
 ### Q: What should I do if the event log processing is slow?
 A: Ensure your system meets the hardware requirements. Reduce the size of the event log or select fewer attributes to process.
 
 ### Q: How can I change the language of the chatbot responses?
 A: KGChat supports multiple languages. You can pose questions in your preferred language, and the application will process and respond accordingly.
+
+### Q: How do I select or change the attributes for my knowledge graph?
+A: After importing the event log, you can select the attributes by clicking on the 'Select Columns' button. To change the attributes later, click on the same button and update your selection.
+
+### Q: How do I handle large event logs that slow down processing?
+A: Try reducing the size of the event log or selecting fewer attributes for analysis. Ensure your system has adequate resources to handle large files.
+
+
 
 ## Glossary and Index
