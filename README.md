@@ -173,7 +173,7 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
         - Reduce the number of selected columns to minimize processing load.
         - Try using a smaller event log.
 
-### Issue 3: API Key Not Found
+#### Issue 3: API Key Not Found
     - Description: Receiving an error that the OpenAI or Huggingface API key is not found
     - Solution: Ensure that your API keys are correctly placed in the respective files located in ´webapp/src/utils/´
         - For OpenAI, use ´OPENAI_API_KEY.txt´.
@@ -186,7 +186,7 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
     
 ### System Errors and Messages
 
-### Error: "This model's maximum length is 16385 tokens. However, you requested XXXXX tokens"
+#### Error: "This model's maximum length is 16385 tokens. However, you requested XXXXX tokens"
     - Description: This error occurs when the combined length of the prompt and the expected response exceeds the model's limit.
     - Solution:
         - Shorten the questions or context provided.
