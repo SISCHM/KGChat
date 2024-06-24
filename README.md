@@ -165,34 +165,35 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
 - Solution:
   - Ensure the event log is in .xes format.
   - Check that the .xes file is not corrupt and is properly formatted.
+ 
+#### Issue 2:  Application crashes when generating subgraphs
+- Description: The application becomes unresponsive or crashes during the generation of subgraphs.
+- Solution:
+  - Ensure your system meets the minimum requirements and has sufficient memory.
+  - Reduce the number of selected columns to minimize processing load.
+  - Try using a smaller event log.
         
-#### Issue 2: Application crashes when generating subgraphs
-    - Description: The application becomes unresponsive or crashes during the generation of subgraphs.
-    - Solution:
-        - Ensure your system meets the minimum requirements and has sufficient memory.
-        - Reduce the number of selected columns to minimize processing load.
-        - Try using a smaller event log.
+#### Issue 3:  API Key Not Found
+- Description: Receiving an error that the OpenAI or Huggingface API key is not found.
+- Solution:
+  - Ensure that your API keys are correctly placed in the respective files located in ´webapp/src/utils/´.
+  - For OpenAI, use ´OPENAI_API_KEY.txt´.
+  - For Huggingface, use ´HUGGINGFACE_TOKEN.txt´.
+ 
+#### Issue 2:  Insufficient API Balance
+- Description : Receiving an error indicating that the API request failed due to insufficient balance.
+- Solution:
+   - Ensure that your OpenAI API balance is topped up      
 
-#### Issue 3: API Key Not Found
-    - Description: Receiving an error that the OpenAI or Huggingface API key is not found
-    - Solution: Ensure that your API keys are correctly placed in the respective files located in ´webapp/src/utils/´
-        - For OpenAI, use ´OPENAI_API_KEY.txt´.
-        - For Huggingface, use ´HUGGINGFACE_TOKEN.txt´.
-        
-#### Issue 4: Insufficient API Balance
-    - Description : Receiving an error indicating that the API request failed due to insufficient balance.
-    - Solution:
-        -Ensure that your OpenAI API balance is topped up
-    
 ### System Errors 
 
 #### Error: "This model's maximum length is 16385 tokens. However, you requested XXXXX tokens"
-    - Description: This error occurs when the combined length of the prompt and the expected response exceeds the model's limit.
-    - Solution:
-        - Shorten the questions or context provided.
-        - Summarize previous interactions to fit within the token limit.
-        - Ensure that the maximum tokens for responses are set appropriately
-        - Start a new conversation.
+- Description: This error occurs when the combined length of the prompt and the expected response exceeds the model's limit.
+- Solution:
+  - Shorten the questions or context provided.
+  - Summarize previous interactions to fit within the token limit.
+  - Ensure that the maximum tokens for responses are set appropriately
+  - Start a new conversation.
 
 ### Installing the dependencies 
 
