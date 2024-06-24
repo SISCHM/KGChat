@@ -162,19 +162,28 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
 
 #### Issue 1: Error loading .xes files
     - Description: The application fails to load event logs in formats other than .xes, ¿displaying an error message?.
-    - Possible Cause: KGChat supports only .xes format for event logs.
     - Solution:
         - File Format: Ensure the event log is in .xes format.
         - File Integrity: Check that the .xes file is not corrupt and is properly formatted.
         
 #### Issue 2: Application crashes when generating subgraphs
     - Description: The application becomes unresponsive or crashes during the generation of subgraphs.
-    - Possible Cause: Large event log size or insufficient system resources.
     - Solution:
         - Ensure your system meets the minimum requirements and has sufficient memory.
         - Reduce the number of selected columns to minimize processing load.
         - Try using a smaller event log.
 
+#### Issue 3: API Key Not Found
+    - Description: Receiving an error that the OpenAI or Huggingface API key is not found
+    - Solution: Ensure that your API keys are correctly placed in the respective files located in ´webapp/src/utils/´
+        - For OpenAI, use ´OPENAI_API_KEY.txt´.
+        - For Huggingface, use ´HUGGINGFACE_TOKEN.txt´.
+        
+#### Issue 4: Insufficient API Balance
+    - Description : Receiving an error indicating that the API request failed due to insufficient balance.
+    - Solution:
+        -Ensure that your OpenAI API balance is topped up
+    
 ### System Errors and Messages
 
 #### Error: "This model's maximum length is 16385 tokens. However, you requested XXXXX tokens"
@@ -185,7 +194,30 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
         - Ensure that the maximum tokens for responses are set appropriately
         - Start a new conversation.
 
-        
+### Installing the dependencies 
+
+#### Error: Cannot Import Name 'triu' from 'scipy.linalg'
+This issue is related to the version of SciPy. To solve it:
+
+1. Uninstall the current version of SciPy :
+    ```sh
+    $ pip uninstall scipy
+    ```
+2. Install a compatible version of SciPy. For Python versions 3.8 to 3.11, you can use SciPy 1.10.1, for Python 3.12 you can use SciPy 1.11.2 :
+    ```sh
+    $ pip install scipy==1.11.2
+    ```
+
+#### Error :Long Path Names on Windows
+
+Enable support for long paths in Windows
+
+1. Press ´Win + R´, type ´regedit´, and press Enter.
+2. Navigate to ´HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem´.
+3. Find the ´LongPathsEnabled´ value. If it does not exist, create it as a new ´DWORD (32-bit)´ value.
+4. Set its value to 1.
+
+5. 
 ## Frequently Asked Questions (FAQ)
 
 ### Q: How can I change the configurations for the LLM models?
