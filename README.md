@@ -180,7 +180,7 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
   - For OpenAI, use `OPENAI_API_KEY.txt`.
   - For Huggingface, use `HUGGINGFACE_TOKEN.txt`.
  
-#### Issue 2:  Insufficient API Balance
+#### Issue 4:  Insufficient API Balance
 - Description : Receiving an error indicating that the API request failed due to insufficient balance.
 - Solution:
    - Ensure that your OpenAI API balance is topped up      
