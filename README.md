@@ -212,9 +212,9 @@ This issue is related to the version of SciPy. To solve it:
 
 Enable support for long paths in Windows
 
-1. Press ´Win + R´, type ´regedit´, and press Enter.
-2. Navigate to ´HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem´.
-3. Find the ´LongPathsEnabled´ value. If it does not exist, create it as a new ´DWORD (32-bit)´ value.
+1. Press `Win + R`, type `regedit`, and press Enter.
+2. Navigate to `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem`.
+3. Find the `LongPathsEnabled` value. If it does not exist, create it as a new `DWORD (32-bit)` value.
 4. Set its value to 1.
 
 5. 
