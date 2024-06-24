@@ -161,10 +161,10 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
 ### Common Issues and Solutions
 
 #### Issue 1: Error loading .xes files
-    - Description: The application fails to load event logs in formats other than .xes, ¿displaying an error message?.
-    - Solution:
-        - File Format: Ensure the event log is in .xes format.
-        - File Integrity: Check that the .xes file is not corrupt and is properly formatted.
+- Description: The application fails to load event logs in formats other than .xes, ¿displaying an error message?.
+- Solution:
+      - Ensure the event log is in .xes format.
+      - Check that the .xes file is not corrupt and is properly formatted.
         
 #### Issue 2: Application crashes when generating subgraphs
     - Description: The application becomes unresponsive or crashes during the generation of subgraphs.
