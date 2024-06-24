@@ -176,9 +176,9 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
 #### Issue 3:  API Key Not Found
 - Description: Receiving an error that the OpenAI or Huggingface API key is not found.
 - Solution:
-  - Ensure that your API keys are correctly placed in the respective files located in ´webapp/src/utils/´.
-  - For OpenAI, use ´OPENAI_API_KEY.txt´.
-  - For Huggingface, use ´HUGGINGFACE_TOKEN.txt´.
+  - Ensure that your API keys are correctly placed in the respective files located in `webapp/src/utils/`.
+  - For OpenAI, use `OPENAI_API_KEY.txt`.
+  - For Huggingface, use `HUGGINGFACE_TOKEN.txt`.
  
 #### Issue 2:  Insufficient API Balance
 - Description : Receiving an error indicating that the API request failed due to insufficient balance.
@@ -208,7 +208,7 @@ This issue is related to the version of SciPy. To solve it:
     ```sh
     $ pip install scipy==1.11.2
     ```
-#### Error :Long Path Names on Windows
+#### Error: Long Path Names on Windows
 
 Enable support for long paths in Windows:
 
