@@ -198,7 +198,8 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
 ### Installing the dependencies 
 
 #### Error: Cannot Import Name 'triu' from 'scipy.linalg'
-This issue is related to the version of SciPy. To solve it:
+
+This issue is related to the version of SciPy ( the scipy.linalg functions tri, triu & tril are deprecated and will be removed in SciPy 1.13). To solve it:
 
 1. Uninstall the current version of SciPy :
     ```sh
