@@ -160,13 +160,13 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
 
 ### Common Issues and Solutions
 
-### Issue 1: Error loading .xes files
+#### Issue 1: Error loading .xes files
     - Description: The application fails to load event logs in formats other than .xes, ¿displaying an error message?.
     - Solution:
         - File Format: Ensure the event log is in .xes format.
         - File Integrity: Check that the .xes file is not corrupt and is properly formatted.
         
-### Issue 2: Application crashes when generating subgraphs
+#### Issue 2: Application crashes when generating subgraphs
     - Description: The application becomes unresponsive or crashes during the generation of subgraphs.
     - Solution:
         - Ensure your system meets the minimum requirements and has sufficient memory.
@@ -179,12 +179,12 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
         - For OpenAI, use ´OPENAI_API_KEY.txt´.
         - For Huggingface, use ´HUGGINGFACE_TOKEN.txt´.
         
-### Issue 4: Insufficient API Balance
+#### Issue 4: Insufficient API Balance
     - Description : Receiving an error indicating that the API request failed due to insufficient balance.
     - Solution:
         -Ensure that your OpenAI API balance is topped up
     
-### System Errors and Messages
+### System Errors 
 
 #### Error: "This model's maximum length is 16385 tokens. However, you requested XXXXX tokens"
     - Description: This error occurs when the combined length of the prompt and the expected response exceeds the model's limit.
@@ -207,10 +207,9 @@ This issue is related to the version of SciPy. To solve it:
     ```sh
     $ pip install scipy==1.11.2
     ```
-
 #### Error :Long Path Names on Windows
 
-Enable support for long paths in Windows
+Enable support for long paths in Windows:
 
 1. Press `Win + R`, type `regedit`, and press Enter.
 2. Navigate to `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem`.
