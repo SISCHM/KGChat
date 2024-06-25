@@ -238,7 +238,30 @@ Reduce the size of the event log or select fewer attributes for analysis. Ensure
 
 
 ## Glossary and Index
+
+### Large Language Models (LLMs)
 "Large language models (LLMs) are a category of foundation models trained on immense amounts of data making them capable of understanding and generating natural language and other types of content to perform a wide range of tasks." [1] 
 
+### Graph Neural Networks (GNNs)
+"Graph neural networks apply the predictive power of deep learning to rich data structures that depict objects and their relationships as points connected by lines in a graph. In GNNs, data points are called nodes, which are linked by lines — called edges — with elements expressed mathematically so machine learning algorithms can make useful predictions at the level of nodes, edges or entire graphs." [2]
+
+An article [3] by Sanchez-Lengeling and his team is also a good starting point for understanding GNNs for beginners.  
+
+### Knowledge Graph 
+"A knowledge graph, also known as a semantic network, represents a network of real-world entities—such as objects, events, situations or concepts—and illustrates the relationship between them." [4] It is made out of three main components: nodes, edges and labels. Every edge between a pair of nodes is labelled to denote the relationship between them. 
+
+### Retrieval Augmented Generation (RAG) 
+"Retrieval-Augmented Generation (RAG) is the process of optimizing the output of a large language model, so it references an authoritative knowledge base outside of its training data sources before generating a response." [5] 
+
+### Graph Retrieval Augmented Generation (Graph RAG) 
+"Retrieval-Augmented Generation (RAG) is a technique to search for information based on a user query and provide the results as reference for an AI answer to be generated. GraphRAG uses LLM-generated knowledge graphs to provide substantial improvements in question-and-answer performance when conducting document analysis of complex information." [6] The technology behind Graph RAG utilizes knowledge graphs as a source of context or factual information for more accurate and contextual answers. [7]
+
 ## References 
-IBM. What are Large Language Models (LLMs)? Retrieved June 25, 2024, from https://www.ibm.com/topics/large-language-models [1]
+[1] IBM. What are Large Language Models (LLMs)? Retrieved June 25, 2024, from https://www.ibm.com/topics/large-language-models 
+[2] Merritt, R. (2022, October 24). What Are Graph Neural Networks? Retrieved June 25, 2024, from https://blogs.nvidia.com/blog/what-are-graph-neural-networks/ 
+[3] Sanchez-Lengeling, et al., "A Gentle Introduction to Graph Neural Networks", Distill, 2021. 
+[4] IBM. What is a knowledge graph? Retrieved June 25, 2024, from https://www.ibm.com/topics/knowledge-graph
+[5] Amazon. What is RAG (Retrieval-Augmented Generation)? Retrieved June 25, 2024, from https://aws.amazon.com/what-is/retrieval-augmented-generation/
+[6] Larson, J., & Truitt, S. (2024, February 13). GraphRAG: Unlocking LLM discovery on Narrative private data. Retrieved June 25, 2024, from https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/
+[7] ontotext. What is Graph RAG? Retrieved June 25, 2024, from https://www.ontotext.com/knowledgehub/fundamentals/what-is-graph-rag/
+
