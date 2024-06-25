@@ -161,7 +161,7 @@ To start on a new chat session, click on the `Start New Chat` button and the fol
 ### Common Issues and Solutions
 
 #### Issue 1: Error loading .xes files
-- Description: The application fails to load event logs in formats other than .xes, ¿displaying an error message?.
+- Description: The application fails to load event logs in formats other than .xes.
 - Solution:
   - Ensure the event log is in .xes format.
   - Check that the .xes file is not corrupt and is properly formatted.
