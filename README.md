@@ -238,3 +238,7 @@ Reduce the size of the event log or select fewer attributes for analysis. Ensure
 
 
 ## Glossary and Index
+"Large language models (LLMs) are a category of foundation models trained on immense amounts of data making them capable of understanding and generating natural language and other types of content to perform a wide range of tasks." [1] 
+
+## References 
+IBM. What are Large Language Models (LLMs)? Retrieved June 25, 2024, from https://www.ibm.com/topics/large-language-models [1]
